@@ -5,10 +5,11 @@ import cv2
 import math
 # from moviepy.editor import *
 
-from imageio.plugins import ffmpeg
+
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-# from moviepy.video.io.VideoFileClip import VideoFileClip
+from CustomLogger import logger
+
 
 
 ###############  underwater color correction #####################################
@@ -180,16 +181,9 @@ def correct_image(input_path, output_path):
     #width = preview.shape[1] // 2
     #preview[::, width:] = corrected_mat[::, width:]
     preview_ftr= corrected_mat
-
-
     preview_bfr = cv2.resize(preview_bfr, (480, 270))
     preview_ftr = cv2.resize(preview_ftr, (480, 270))
-
     preview_imgs = [cv2.imencode('.png', preview_bfr)[1].tobytes(), cv2.imencode('.png', preview_ftr)[1].tobytes()]
-
-
-
-
     return preview_imgs
 
 
@@ -361,8 +355,8 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # Set audio from source video to res video
     final_clip = coloredVideo.set_audio(sourceVideo.audio)
     # Write final file
-    # final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, progress_bar=False, verbose=False)
-    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=None)
+    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=None)
+
     # remove muted file
     os.remove(outputVideoPath)
     # rename result file
