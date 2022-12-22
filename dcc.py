@@ -57,11 +57,11 @@ left_column = [
 
 viewer = [
     [
-        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO__", visible=False, justification='center')
+        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO__", justification='center')
     ],
     [
 
-        sg.Image(visible=False, key="__PREVIEW__")
+        sg.Image( key="__PREVIEW__")
 
     ],
     [
@@ -141,7 +141,7 @@ if __name__ == "__main__":
             window["__CLEAR_LIST__"].update(disabled=True)
 
             #window.Element('__VIEWER__').Update(visible=True)
-            window["__PREVIEW__"].update(visible=True)
+            #window["__PREVIEW__"].update(visible=True)
             #window["__VIDEO__"].update(visible=True)
 
 
@@ -150,13 +150,13 @@ if __name__ == "__main__":
             window["__CORRECT__"].update(disabled=False)
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=False)
-            window["__PREVIEW__"].update(visible=False)
+            #window["__PREVIEW__"].update(visible=False)
 
-            window["__PROGBAR_BR__"].update(visible=False)
-            window["__PROGBAR_PERCENTS__"].update(visible=False)
-            window["__PROGBAR_LABEL__"].update(visible=False)
-            window["__VIDEO__"].update(visible=False)
-            window["__PROGBAR__"].update(visible=False)
+            #window["__PROGBAR_BR__"].update(visible=False)
+            #window["__PROGBAR_PERCENTS__"].update(visible=False)
+            #window["__PROGBAR_LABEL__"].update(visible=False)
+            #window["__VIDEO__"].update(visible=False)
+            #window["__PROGBAR__"].update(visible=False)
             window.Element('__VIEWER__').Update(visible=False)
 
 
@@ -169,14 +169,14 @@ if __name__ == "__main__":
 
         if event == "__CLEAR_LIST__":
             window["__INPUT_FILE_LIST__"].update(values=[])
-            window["__PREVIEW__"].update(visible=False)
+            #window["__PREVIEW__"].update(visible=False)
             window["__STATUS__"].update("")
 
-            window["__PROGBAR_BR__"].update(visible=False)
-            window["__PROGBAR_PERCENTS__"].update(visible=False)
-            window["__PROGBAR_LABEL__"].update(visible=False)
-            window["__VIDEO__"].update(visible=False)
-            window["__PROGBAR__"].update(visible=False)
+           # window["__PROGBAR_BR__"].update(visible=False)
+           # window["__PROGBAR_PERCENTS__"].update(visible=False)
+           # window["__PROGBAR_LABEL__"].update(visible=False)
+           # window["__VIDEO__"].update(visible=False)
+           # window["__PROGBAR__"].update(visible=False)
             window.Element('__VIEWER__').Update(visible=False)
 
         if analyze_video_generator:
@@ -217,7 +217,7 @@ if __name__ == "__main__":
                 window["__PROGBAR_PERCENTS__"].update(str(round(percent, 2)) + "%")
                 window["__PROGBAR__"].update(visible=True)
                 window["__PROGBAR__"].UpdateBar(percent)
-                window["__VIDEO__"].update(visible=True)
+                #window["__VIDEO__"].update(visible=True)
                 window["__VIDEO__"].update(current_in_filename)
 
 
@@ -226,22 +226,22 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("Processing done")
                 process_video_generator = None
 
-                window["__PROGBAR_BR__"].update(visible=False)
-                window["__PROGBAR_PERCENTS__"].update(visible=False)
-                window["__PROGBAR_LABEL__"].update(visible=False)
-                window["__VIDEO__"].update(visible=False)
-                window["__PROGBAR__"].update(visible=False)
+                #window["__PROGBAR_BR__"].update(visible=False)
+                #window["__PROGBAR_PERCENTS__"].update(visible=False)
+                #window["__PROGBAR_LABEL__"].update(visible=False)
+                #window["__VIDEO__"].update(visible=False)
+                #window["__PROGBAR__"].update(visible=False)
                 window.Element('__VIEWER__').Update(visible=False)
 
             except:
                 window["__STATUS__"].update("Processing failed")
                 process_video_generator = None
 
-                window["__PROGBAR_BR__"].update(visible=False)
-                window["__PROGBAR_PERCENTS__"].update(visible=False)
-                window["__PROGBAR_LABEL__"].update(visible=False)
-                window["__VIDEO__"].update(visible=False)
-                window["__PROGBAR__"].update(visible=False)
+                #window["__PROGBAR_BR__"].update(visible=False)
+                #window["__PROGBAR_PERCENTS__"].update(visible=False)
+                #window["__PROGBAR_LABEL__"].update(visible=False)
+                #window["__VIDEO__"].update(visible=False)
+               # window["__PROGBAR__"].update(visible=False)
                 window.Element('__VIEWER__').Update(visible=False)
 
             continue
@@ -261,12 +261,17 @@ if __name__ == "__main__":
 
                 if extension in IMAGE_TYPES:
                     window.Element('__VIEWER__').Update(visible=True)
-                    window["__PREVIEW__"].update(visible=True)
+                    #window["__PREVIEW__"].update(visible=True)
                     window["__VIDEO__"].update(visible=True)
                     window["__VIDEO__"].update(current_in_filename)
+                    window["__PROGBAR_BR__"].update(visible=False)
+                    window["__PROGBAR_PERCENTS__"].update(visible=False)
+                    window["__PROGBAR_LABEL__"].update(visible=False)
+                    window["__PROGBAR__"].update(visible=False)
 
                     preview = correct_image(f, output_filepath)
                     window["__PREVIEW__"](data=preview)
+
 
 
                 if extension in VIDEO_TYPES:
@@ -277,13 +282,13 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("All done!")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
-                window["__PREVIEW__"].update(visible=False)
+                #window["__PREVIEW__"].update(visible=False)
 
-                window["__PROGBAR_BR__"].update(visible=False)
-                window["__PROGBAR_PERCENTS__"].update(visible=False)
-                window["__PROGBAR_LABEL__"].update(visible=False)
-                window["__VIDEO__"].update(visible=False)
-                window["__PROGBAR__"].update(visible=False)
+                #window["__PROGBAR_BR__"].update(visible=False)
+                #window["__PROGBAR_PERCENTS__"].update(visible=False)
+                #window["__PROGBAR_LABEL__"].update(visible=False)
+               # window["__VIDEO__"].update(visible=False)
+                #window["__PROGBAR__"].update(visible=False)
                 window.Element('__VIEWER__').Update(visible=False)
 
 
@@ -296,13 +301,13 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("Error in accessing file")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
-                window["__PREVIEW__"].update(visible=False)
+                #window["__PREVIEW__"].update(visible=False)
 
-                window["__PROGBAR_BR__"].update(visible=False)
-                window["__PROGBAR_PERCENTS__"].update(visible=False)
-                window["__PROGBAR_LABEL__"].update(visible=False)
-                window["__VIDEO__"].update(visible=False)
-                window["__PROGBAR__"].update(visible=False)
+                #window["__PROGBAR_BR__"].update(visible=False)
+                #window["__PROGBAR_PERCENTS__"].update(visible=False)
+                #window["__PROGBAR_LABEL__"].update(visible=False)
+                #window["__VIDEO__"].update(visible=False)
+               # window["__PROGBAR__"].update(visible=False)
                 window.Element('__VIEWER__').Update(visible=False)
 
 
