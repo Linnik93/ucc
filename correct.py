@@ -176,13 +176,21 @@ def correct_image(input_path, output_path):
 
     cv2.imwrite(output_path, corrected_mat)
 
-    preview = mat.copy()
-    width = preview.shape[1] // 2
-    preview[::, width:] = corrected_mat[::, width:]
+    preview_bfr = mat.copy()
+    #width = preview.shape[1] // 2
+    #preview[::, width:] = corrected_mat[::, width:]
+    preview_ftr= corrected_mat
 
-    preview = cv2.resize(preview, (480, 270))
 
-    return cv2.imencode('.png', preview)[1].tobytes()
+    preview_bfr = cv2.resize(preview_bfr, (480, 270))
+    preview_ftr = cv2.resize(preview_ftr, (480, 270))
+
+    preview_imgs = [cv2.imencode('.png', preview_bfr)[1].tobytes(), cv2.imencode('.png', preview_ftr)[1].tobytes()]
+
+
+
+
+    return preview_imgs
 
 
 def analyze_video(input_video_path, output_video_path):

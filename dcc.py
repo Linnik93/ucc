@@ -50,7 +50,7 @@ left_column = [
         sg.Text(text="", font=('Arial', 5))
     ],
     [
-        sg.Text(text="", size=(27, 1), text_color='yellow', key="__STATUS__")
+        sg.Text(text="", size=(27, 1), text_color='black', key="__STATUS__")
     ]
 ]
 
@@ -60,8 +60,20 @@ viewer = [
         sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO__", justification='center')
     ],
     [
+        sg.Text(text="Initial Image:", size=(45, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left',visible=False)
+    ],
+    [
 
         sg.Image( key="__PREVIEW__")
+
+    ],
+    [
+        sg.Text(text="Final Image:", size=(45, 1), font=('Arial', 10), key="__FINAL_IMAGE_LABEL__", justification='left',
+                visible=False)
+    ],
+    [
+
+        sg.Image(key="__PREVIEW_AFTER__",visible=False)
 
     ],
     [
@@ -211,6 +223,9 @@ if __name__ == "__main__":
                 window["__STATUS__"].update(status_message)
 
                 window.Element('__VIEWER__').Update(visible=True)
+                window["__PREVIEW_AFTER__"].update(visible=False)
+                window["__INIT_IMAGE_LABEL__"].update(visible=False)
+                window["__FINAL_IMAGE_LABEL__"].update(visible=False)
                 window["__PROGBAR_BR__"].update(visible=True)
                 window["__PROGBAR_LABEL__"].update(visible=True)
                 window["__PROGBAR_PERCENTS__"].update(visible=True)
@@ -264,13 +279,22 @@ if __name__ == "__main__":
                     #window["__PREVIEW__"].update(visible=True)
                     window["__VIDEO__"].update(visible=True)
                     window["__VIDEO__"].update(current_in_filename)
+                    window["__PREVIEW_AFTER__"].update(visible=True)
+                    window["__INIT_IMAGE_LABEL__"].update(visible=True)
+                    window["__FINAL_IMAGE_LABEL__"].update(visible=True)
                     window["__PROGBAR_BR__"].update(visible=False)
                     window["__PROGBAR_PERCENTS__"].update(visible=False)
                     window["__PROGBAR_LABEL__"].update(visible=False)
                     window["__PROGBAR__"].update(visible=False)
 
                     preview = correct_image(f, output_filepath)
-                    window["__PREVIEW__"](data=preview)
+
+                    preview_before = preview[0]
+                    preview_after = preview[1]
+
+
+                    window["__PREVIEW__"](data=preview_before)
+                    window["__PREVIEW_AFTER__"](data=preview_after)
 
 
 
