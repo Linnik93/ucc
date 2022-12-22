@@ -3,13 +3,8 @@ import sys
 import numpy as np
 import cv2
 import math
-# from moviepy.editor import *
-
 
 from moviepy.video.io.VideoFileClip import VideoFileClip
-
-from CustomLogger import logger
-
 
 
 ###############  underwater color correction #####################################
@@ -309,7 +304,6 @@ def process_video(video_data, yield_preview=False):
 
     cap.release()
     new_video.release()
-    print("calling audio")
     copy_audio(video_data["input_video_path"], video_data["output_video_path"])
 
 
