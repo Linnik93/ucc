@@ -3,13 +3,12 @@ import sys
 import numpy as np
 import cv2
 import math
-#from moviepy.editor import *
+# from moviepy.editor import *
 
 from imageio.plugins import ffmpeg
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-#from moviepy.video.io.VideoFileClip import VideoFileClip
-
+# from moviepy.video.io.VideoFileClip import VideoFileClip
 
 
 ###############  underwater color correction #####################################
@@ -20,7 +19,8 @@ MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1.2
 SAMPLE_SECONDS = 2  # Extracts color correction from every N seconds
 
-video_fps=0.0
+video_fps = 0.0
+
 
 def hue_shift_red(mat, h):
     # print('called hue_shift_red')
@@ -180,7 +180,7 @@ def correct_image(input_path, output_path):
     width = preview.shape[1] // 2
     preview[::, width:] = corrected_mat[::, width:]
 
-    preview = cv2.resize(preview, (960, 540))
+    preview = cv2.resize(preview, (480, 270))
 
     return cv2.imencode('.png', preview)[1].tobytes()
 
@@ -242,12 +242,13 @@ def process_video(video_data, yield_preview=False):
 
     frame_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     frame_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    #video_FourCC = cap.get(cv2.CAP_PROP_FOURCC)
-    #video_FourCC = cv2.VideoWriter_fourcc(*'hvc1')
+    # video_FourCC = cap.get(cv2.CAP_PROP_FOURCC)
+    # video_FourCC = cv2.VideoWriter_fourcc(*'hvc1')
     video_fps = cap.get(cv2.CAP_PROP_FPS)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    new_video = cv2.VideoWriter(video_data["output_video_path"], fourcc, video_fps, (int(frame_width), int(frame_height)))
+    new_video = cv2.VideoWriter(video_data["output_video_path"], fourcc, video_fps,
+                                (int(frame_width), int(frame_height)))
 
     filter_matrices = video_data["filters"]
     filter_indices = video_data["filter_indices"]
@@ -298,17 +299,17 @@ def process_video(video_data, yield_preview=False):
             height = preview.shape[0] // 2
             preview[::, width:] = corrected_mat[::, width:]
 
-            preview = cv2.resize(preview, (960, 540))
+            preview = cv2.resize(preview, (480, 270))
 
             yield percent, cv2.imencode('.png', preview)[1].tobytes()
         else:
             yield None
 
-
     cap.release()
     new_video.release()
     print("calling audio")
-    copy_audio(video_data["input_video_path"],video_data["output_video_path"])
+    copy_audio(video_data["input_video_path"], video_data["output_video_path"])
+
 
 #####################################################################################
 ################ color balance correction ###########################################
@@ -348,37 +349,34 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # Set colored videofile
     coloredVideo = VideoFileClip(outputVideoPath)
     # set sounded video
-    soundedVideoPath = outputVideoPath.replace(".mp4","")+"_temp.mp4"
+    soundedVideoPath = outputVideoPath.replace(".mp4", "") + "_temp.mp4"
     # Set audio from source video to res video
     final_clip = coloredVideo.set_audio(sourceVideo.audio)
     # Write final file
-    #final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, progress_bar=False, verbose=False)
-    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=None)
+    # final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, progress_bar=False, verbose=False)
+    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=None)
     # remove muted file
     os.remove(outputVideoPath)
     # rename result file
-    os.rename(soundedVideoPath, soundedVideoPath.replace("_temp.mp4",".mp4"))
-    
-
-
+    os.rename(soundedVideoPath, soundedVideoPath.replace("_temp.mp4", ".mp4"))
 
 
 #####################################################################################
-#if __name__ == "__main__":
-    #T###################Test for photo##################################
-    # inputImage = "./data/f0664064.jpg"
-    # outputImage = "./data/out_f0664064.jpg"
-    # mat = cv2.imread(inputImage)
-    # mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
-    # corrected_mat = correct(mat)
-    ################ Contrast and Brightness setting ###################
-    # alpha = 1.1 # Contrast control (1.0-3.0)
-    # beta = -1 # Brightness control (0-100)
-    # corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
-    ####################################################################
-    # cv2.imwrite(outputImage, corrected_mat)
+# if __name__ == "__main__":
+# T###################Test for photo##################################
+# inputImage = "./data/f0664064.jpg"
+# outputImage = "./data/out_f0664064.jpg"
+# mat = cv2.imread(inputImage)
+# mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
+# corrected_mat = correct(mat)
+################ Contrast and Brightness setting ###################
+# alpha = 1.1 # Contrast control (1.0-3.0)
+# beta = -1 # Brightness control (0-100)
+# corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
+####################################################################
+# cv2.imwrite(outputImage, corrected_mat)
 
-    ################ Test for video ##############################
+################ Test for video ##############################
 """"    
 inputVideo = "D:/Color correction test/YDXJ0084.mp4"
 outputVideo = "D:/Color correction test/YDXJ0084_corrected.mp4"
