@@ -9,6 +9,7 @@ import math
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
+import CustomLogger
 from CustomLogger import video_proc_logger, audio_proc_logger
 
 ###############  underwater color correction #####################################
@@ -187,6 +188,7 @@ def correct_image(input_path, output_path):
 
 
 def analyze_video(input_video_path, output_video_path):
+
     # Initialize new video writer
     cap = cv2.VideoCapture(input_video_path)
     fps = math.ceil(cap.get(cv2.CAP_PROP_FPS))

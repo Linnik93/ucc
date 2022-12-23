@@ -209,6 +209,9 @@ if __name__ == "__main__":
 
         if analyze_video_generator:
             try:
+                # need to set i null before video processing
+                cl.audio_progress_percentage=0
+                cl.video_progress_percentage=0
                 item = next(analyze_video_generator)
                 if type(item) == dict:
                     video_data = item
@@ -233,6 +236,13 @@ if __name__ == "__main__":
 
         if process_video_generator:
             try:
+                # need to update before processing video
+                window["__SOUND_PROGBAR__"].UpdateBar(cl.video_progress_percentage)
+                window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.video_progress_percentage) + "%")
+
+                window["__SOUND_EX_PROGBAR__"].UpdateBar(cl.audio_progress_percentage)
+                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(cl.audio_progress_percentage) + "%")
+
                 percent, preview = next(process_video_generator)
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
                 window["__VIDEO_PREVIEW__"](data=preview)
