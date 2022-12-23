@@ -32,13 +32,15 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Text("Output folder", size=(15, 1)),
-        sg.InputText(default_text="./", size=(25, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__"),
-        sg.FolderBrowse(size=(9, 1))
+        sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
+        sg.Text("", size=(1, 1)),
+        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="grey"),
+        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__")
     ],
     [
-        sg.Text(text="Output file prefix", size=(15, 1)),
-        sg.InputText(default_text="corrected", size=(25, 1), key="__OUTPUT_PREFIX__")
+        sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True),
+        sg.Text(text="", size=(1, 1)),
+        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=True,disabled_readonly_background_color="grey")
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -62,7 +64,7 @@ video_viewer = [
         sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center')
     ],
     [
-        sg.Image(key="__VIDEO_PREVIEW__"),
+        sg.Image(key="__VIDEO_PREVIEW__")
     ],
     [
         sg.Text(" ", font=('Arial', 15), key="__PROGBAR_BR__"),
@@ -162,8 +164,6 @@ if __name__ == "__main__":
     while True:
         event, values = window.read(1)
 
-
-
         if event == sg.WIN_CLOSED:
             break
 
@@ -179,6 +179,23 @@ if __name__ == "__main__":
             # Change output folder to the same as input
             if len(input_filepaths) > 0:
                 window["__OUTPUT_FOLDER__"].update(os.path.dirname(input_filepaths[0]))
+
+        #--------------------Checkboxes --------------------------------
+        if event == "__OUTPUT_FOLDER_CB__":
+            if(values["__OUTPUT_FOLDER_CB__"]==False):
+                window["__OUTPUT_FOLDER__"].update(disabled=True)
+                window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=True)
+            else:
+                window["__OUTPUT_FOLDER__"].update(disabled=False)
+                window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
+
+        if event == "__OUTPUT_PREFIX_CB__":
+
+            if(values["__OUTPUT_PREFIX_CB__"]==False):
+                window["__OUTPUT_PREFIX__"].update(disabled=True)
+            else:
+                window["__OUTPUT_PREFIX__"].update(disabled=False)
+        #---------------------------------------------------------------
 
         if event == "__OUTPUT_FOLDER__":
             window["__OUTPUT_FOLDER__"].update(values["__OUTPUT_FOLDER__"])
