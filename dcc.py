@@ -26,7 +26,7 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__")
+        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",)
     ],
     [
         sg.Text(text="",font=('Arial', 5))
@@ -60,30 +60,44 @@ left_column = [
 video_viewer = [
     [
         sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center')
-    ],[
-
-
+    ],
+    [
         sg.Image(key="__VIDEO_PREVIEW__"),
-
     ],
     [
         sg.Text(" ", font=('Arial', 15), key="__PROGBAR_BR__"),
     ],
     [
-        sg.Text("Color restoration video progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",
-                justification='left'),
-        sg.Text(text="", font=('Arial', 15), size=(14, 1), key="__PROGBAR_PERCENTS__",
-                justification='right')
+        sg.Text("Color restoration video progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",justification='left'),
+        sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__PROGBAR_PERCENTS__",justification='right')
 
     ],
 
     [
         sg.ProgressBar(100, orientation='h', size=(37, 20), key="__PROGBAR__")
     ],
+
     [
-        sg.Text("Audio track adding progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
+        sg.Text(" ", font=('Arial', 15)),
+    ],
+    [
+        sg.Text("Audio extraction progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_EX_PROGBAR_LABEL__",
                 justification='left'),
-        sg.Text(text="", font=('Arial', 15), size=(14, 1), key="__SOUND_PROGBAR_PERCENTS__",
+        sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__SOUND_EX_PROGBAR_PERCENTS__",
+                justification='right')
+
+    ],
+    [
+        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_EX_PROGBAR__")
+    ],
+
+    [
+        sg.Text(" ", font=('Arial', 15)),
+    ],
+    [
+        sg.Text("Audio importing progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
+                justification='left'),
+        sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__SOUND_PROGBAR_PERCENTS__",
                 justification='right')
 
     ],
@@ -148,9 +162,7 @@ if __name__ == "__main__":
     while True:
         event, values = window.read(1)
 
-        if (cl.progress_percentage>0 and cl.progress_percentage<=100 ):
-            window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
-            window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.progress_percentage) + "%")
+
 
         if event == sg.WIN_CLOSED:
             break
@@ -234,8 +246,16 @@ if __name__ == "__main__":
                 window["__VIDEO_NAME__"].update(current_in_filename)
 
             except StopIteration:
-                window["__STATUS__"].update("Processing done")
-                process_video_generator = None
+
+                window["__SOUND_PROGBAR__"].UpdateBar(cl.video_progress_percentage)
+                window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.video_progress_percentage) + "%")
+
+                window["__SOUND_EX_PROGBAR__"].UpdateBar(cl.audio_progress_percentage)
+                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(cl.audio_progress_percentage) + "%")
+
+                if(cl.audio_progress_percentage==100 and cl.video_progress_percentage==100):
+                    window["__STATUS__"].update("Processing done")
+                    process_video_generator = None
                 #window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 #window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
 

@@ -6,9 +6,10 @@ import numpy as np
 import cv2
 import math
 
+from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-from CustomLogger import video_proc_logger
+from CustomLogger import video_proc_logger, audio_proc_logger
 
 ###############  underwater color correction #####################################
 
@@ -344,21 +345,61 @@ def simplest_cb(img, percent):
 
 ################## Adding audio to new video from old video #########################
 def copy_audio(inputVideoPath, outputVideoPath):
-    # Get source video file
-    sourceVideo = VideoFileClip(inputVideoPath)
-    # Set colored videofile
-    coloredVideo = VideoFileClip(outputVideoPath)
-    # set sounded video
-    soundedVideoPath = outputVideoPath.replace(".mp4", "") + "_temp.mp4"
-    # Set audio from source video to res video
-    final_clip = coloredVideo.set_audio(sourceVideo.audio)
-    # Write final file
-    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=video_proc_logger)
+    # Create temp dir
+    temp_dir='Temp'
+    temp_dir_path='./'+ temp_dir+'/'
 
-    # remove muted file
+    if(os.path.exists(temp_dir_path)==False):
+        os.mkdir(temp_dir_path)
+        print('Temp dir was created')
+
+    # Get source video file. Need to extract audio track
+    sourceVideo = VideoFileClip(inputVideoPath)
+    print("inputVideoPath: "+inputVideoPath)
+
+    # Set colored videofile. Need to merge with extracted audio track
+    coloredVideo = VideoFileClip(outputVideoPath)
+    print("outputVideoPath: " + outputVideoPath)
+
+    # set temp sounded video path
+    #get name of video file
+    splitted_path_array = inputVideoPath.split("/")
+    in_filename = splitted_path_array[len(splitted_path_array)-1]
+    print("in_filename: " + in_filename)
+    soundedVideoPath = temp_dir_path+"temp_"+in_filename
+    print("soundedVideoPath: " + soundedVideoPath)
+
+    # set temp audio file name and path
+    audio = 'temp_'+in_filename.replace("mp4", "mp3")
+    audio_path = temp_dir_path+audio
+    print("audio_path: " + audio_path)
+
+    #define source audiofile
+    source_audiofile=sourceVideo.audio
+
+    # write audio to temp dir
+    source_audiofile.write_audiofile(audio_path,logger=audio_proc_logger)
+
+    # loading recorded audio file
+    audioclip = AudioFileClip(audio_path)
+
+
+    # Set audio from source video to final video
+    final_clip = coloredVideo.set_audio(audioclip)
+
+    # Write final video file
+    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
+
+
+    # remove corrected video without sound and remove audi file from temp dir
     os.remove(outputVideoPath)
-    # rename result file
-    os.rename(soundedVideoPath, soundedVideoPath.replace("_temp.mp4", ".mp4"))
+    os.remove(audio_path)
+
+    # replace final video from temp
+    # need to fix behaviour with output path
+    os.replace(soundedVideoPath,inputVideoPath.replace(in_filename,"corrected_"+in_filename))
+
+
 
 
 def call_thread_copy_audio(inputVideoPath, outputVideoPath):
