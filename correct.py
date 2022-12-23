@@ -1,11 +1,14 @@
 import os
 import sys
+import threading
+
 import numpy as np
 import cv2
 import math
 
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
+from CustomLogger import video_proc_logger
 
 ###############  underwater color correction #####################################
 
@@ -304,7 +307,8 @@ def process_video(video_data, yield_preview=False):
 
     cap.release()
     new_video.release()
-    copy_audio(video_data["input_video_path"], video_data["output_video_path"])
+    #copy_audio(video_data["input_video_path"], video_data["output_video_path"])
+    call_thread_copy_audio(video_data["input_video_path"], video_data["output_video_path"])
 
 
 #####################################################################################
@@ -349,7 +353,7 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # Set audio from source video to res video
     final_clip = coloredVideo.set_audio(sourceVideo.audio)
     # Write final file
-    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=None)
+    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=video_proc_logger)
 
     # remove muted file
     os.remove(outputVideoPath)
@@ -357,6 +361,15 @@ def copy_audio(inputVideoPath, outputVideoPath):
     os.rename(soundedVideoPath, soundedVideoPath.replace("_temp.mp4", ".mp4"))
 
 
+def call_thread_copy_audio(inputVideoPath, outputVideoPath):
+    """
+    thread_copy_audio = threading.Thread(target=copy_audio)
+    thread_copy_audio.daemon = True
+    thread_copy_audio.args = (inputVideoPath, outputVideoPath)
+    thread_copy_audio.start()
+    """
+    thread_01 = threading.Thread(target=copy_audio, args=(inputVideoPath,outputVideoPath,))
+    thread_01.start()
 #####################################################################################
 # if __name__ == "__main__":
 # T###################Test for photo##################################

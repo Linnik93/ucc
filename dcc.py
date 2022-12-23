@@ -2,6 +2,7 @@ import sys
 
 import PySimpleGUI as sg
 import os
+import CustomLogger as cl
 from correct import correct_image, analyze_video, process_video
 
 progress_val = ''
@@ -69,15 +70,22 @@ video_viewer = [
         sg.Text(" ", font=('Arial', 15), key="__PROGBAR_BR__"),
     ],
     [
-        sg.Text("Progress:", size=(16, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",
+        sg.Text("Color restoration video progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",
                 justification='left'),
-        sg.Text(text="", font=('Arial', 15), size=(26, 1), key="__PROGBAR_PERCENTS__",
+        sg.Text(text="", font=('Arial', 15), size=(14, 1), key="__PROGBAR_PERCENTS__",
                 justification='right')
 
     ],
 
     [
         sg.ProgressBar(100, orientation='h', size=(37, 20), key="__PROGBAR__")
+    ],
+    [
+        sg.Text("Audio track adding progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
+                justification='left'),
+        sg.Text(text="", font=('Arial', 15), size=(14, 1), key="__SOUND_PROGBAR_PERCENTS__",
+                justification='right')
+
     ],
     [
         sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_PROGBAR__")
@@ -139,6 +147,10 @@ if __name__ == "__main__":
 
     while True:
         event, values = window.read(1)
+
+        if (cl.progress_percentage>0 and cl.progress_percentage<=100 ):
+            window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
+            window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.progress_percentage) + "%")
 
         if event == sg.WIN_CLOSED:
             break
@@ -217,14 +229,15 @@ if __name__ == "__main__":
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
                 window["__PROGBAR_PERCENTS__"].update(str(round(percent, 2)) + "%")
                 window["__PROGBAR__"].UpdateBar(percent)
-                window["__SOUND_PROGBAR__"].UpdateBar(percent)
+                #window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
 
                 window["__VIDEO_NAME__"].update(current_in_filename)
 
             except StopIteration:
                 window["__STATUS__"].update("Processing done")
                 process_video_generator = None
-                window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                #window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
 
             except:
                 window["__STATUS__"].update("Processing failed")
