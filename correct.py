@@ -351,28 +351,28 @@ def copy_audio(inputVideoPath, outputVideoPath):
 
     if(os.path.exists(temp_dir_path)==False):
         os.mkdir(temp_dir_path)
-        print('Temp dir was created')
+        #print('Temp dir was created')
 
     # Get source video file. Need to extract audio track
     sourceVideo = VideoFileClip(inputVideoPath)
-    print("inputVideoPath: "+inputVideoPath)
+    #print("inputVideoPath: "+inputVideoPath)
 
     # Set colored videofile. Need to merge with extracted audio track
     coloredVideo = VideoFileClip(outputVideoPath)
-    print("outputVideoPath: " + outputVideoPath)
+    #print("outputVideoPath: " + outputVideoPath)
 
     # set temp sounded video path
     #get name of video file
     splitted_path_array = inputVideoPath.split("/")
     in_filename = splitted_path_array[len(splitted_path_array)-1]
-    print("in_filename: " + in_filename)
+    #print("in_filename: " + in_filename)
     soundedVideoPath = temp_dir_path+"temp_"+in_filename
-    print("soundedVideoPath: " + soundedVideoPath)
+    #print("soundedVideoPath: " + soundedVideoPath)
 
     # set temp audio file name and path
     audio = 'temp_'+in_filename.replace("mp4", "mp3")
     audio_path = temp_dir_path+audio
-    print("audio_path: " + audio_path)
+    #print("audio_path: " + audio_path)
 
     #define source audiofile
     source_audiofile=sourceVideo.audio
@@ -383,13 +383,11 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # loading recorded audio file
     audioclip = AudioFileClip(audio_path)
 
-
     # Set audio from source video to final video
     final_clip = coloredVideo.set_audio(audioclip)
 
     # Write final video file
     final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
-
 
     # remove corrected video without sound and remove audi file from temp dir
     os.remove(outputVideoPath)
@@ -397,10 +395,7 @@ def copy_audio(inputVideoPath, outputVideoPath):
 
     # replace final video from temp
     # need to fix behaviour with output path
-    os.replace(soundedVideoPath,inputVideoPath.replace(in_filename,"corrected_"+in_filename))
-
-
-
+    os.replace(soundedVideoPath,outputVideoPath)
 
 def call_thread_copy_audio(inputVideoPath, outputVideoPath):
     """
