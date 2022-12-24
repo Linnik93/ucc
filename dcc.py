@@ -38,9 +38,9 @@ left_column = [
         sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__")
     ],
     [
-        sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True),
+        sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True,default=True),
         sg.Text(text="", size=(1, 1)),
-        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=True,disabled_readonly_background_color="grey")
+        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="grey")
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -188,6 +188,7 @@ if __name__ == "__main__":
             else:
                 window["__OUTPUT_FOLDER__"].update(disabled=False)
                 window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
+                window["__OUTPUT_PREFIX__"].update(disabled=True)
 
         if event == "__OUTPUT_PREFIX_CB__":
 
@@ -197,7 +198,7 @@ if __name__ == "__main__":
                 window["__OUTPUT_PREFIX__"].update(disabled=False)
         #---------------------------------------------------------------
 
-        if event == "__OUTPUT_FOLDER__":
+        if (event == "__OUTPUT_FOLDER__" and values["__OUTPUT_FOLDER_CB__"]==True):
             window["__OUTPUT_FOLDER__"].update(values["__OUTPUT_FOLDER__"])
 
         if event == "__CORRECT__":
@@ -299,9 +300,27 @@ if __name__ == "__main__":
                 f = next(file_generator)
                 window["__INPUT_FILE_LIST__"].update(set_to_index=file_index)
                 file_index += 1
-                new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
-                output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
-                current_in_filename = os.path.basename(f)
+
+                if(values["__OUTPUT_PREFIX_CB__"] == True):
+                    new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
+                else:
+                    new_filename=os.path.basename(f)
+
+
+                if (values["__OUTPUT_FOLDER_CB__"] == True):
+                    output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
+                else:
+                    output_filepath = os.path.dirname(f)+"/"+new_filename
+                    output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
+
+                    ############################################################################
+                    #need to fix output path as input path
+
+
+
+                #new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
+                #output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
+                #current_in_filename = os.path.basename(f)
                 extension = f[f.rfind("."):].lower()
 
                 if extension in IMAGE_TYPES:
