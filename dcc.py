@@ -321,8 +321,6 @@ if __name__ == "__main__":
                         output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
                     else:
                         output_filepath = os.path.dirname(f)+"/"+new_filename
-                        output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
-
                     ############################################################################
 
                     extension = f[f.rfind("."):].lower()
