@@ -228,8 +228,6 @@ if __name__ == "__main__":
         if analyze_video_generator:
             try:
                 # need to set i null before video processing
-                cl.audio_progress_percentage=0
-                cl.video_progress_percentage=0
                 item = next(analyze_video_generator)
                 if type(item) == dict:
                     video_data = item
@@ -254,12 +252,17 @@ if __name__ == "__main__":
 
         if process_video_generator:
             try:
-                # need to update before processing video
-                window["__SOUND_PROGBAR__"].UpdateBar(cl.video_progress_percentage)
-                window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.video_progress_percentage) + "%")
 
-                window["__SOUND_EX_PROGBAR__"].UpdateBar(cl.audio_progress_percentage)
-                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(cl.audio_progress_percentage) + "%")
+                if (cl.video_progress_percentage > 99):
+                    cl.video_progress_percentage = 100
+                if (cl.audio_progress_percentage > 99):
+                    cl.audio_progress_percentage = 100
+                # need to update before processing video
+                window["__SOUND_PROGBAR__"].UpdateBar(round(cl.video_progress_percentage))
+                window["__SOUND_PROGBAR_PERCENTS__"].update(str(round(cl.video_progress_percentage)) + "%")
+
+                window["__SOUND_EX_PROGBAR__"].UpdateBar(round(cl.audio_progress_percentage))
+                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(round(cl.audio_progress_percentage)) + "%")
 
                 percent, preview = next(process_video_generator)
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
@@ -267,25 +270,29 @@ if __name__ == "__main__":
                 status_message = "Processing: {:.2f} %".format(percent)
                 window["__STATUS__"].update(status_message)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
-                window["__PROGBAR_PERCENTS__"].update(str(round(percent, 2)) + "%")
-                window["__PROGBAR__"].UpdateBar(percent)
-                #window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
+
+                if(percent>99):
+                    percent=100
+                window["__PROGBAR_PERCENTS__"].update(str(round(percent)) + "%")
+                window["__PROGBAR__"].UpdateBar(round(percent))
 
                 window["__VIDEO_NAME__"].update(current_in_filename)
 
             except StopIteration:
 
-                window["__SOUND_PROGBAR__"].UpdateBar(cl.video_progress_percentage)
-                window["__SOUND_PROGBAR_PERCENTS__"].update(str(cl.video_progress_percentage) + "%")
+                if (cl.audio_progress_percentage > 99):
+                    cl.audio_progress_percentage = 100
+                if (cl.video_progress_percentage > 99):
+                    cl.video_progress_percentage = 100
+                window["__SOUND_PROGBAR__"].UpdateBar(round(cl.video_progress_percentage))
+                window["__SOUND_PROGBAR_PERCENTS__"].update(str(round(cl.video_progress_percentage)) + "%")
 
-                window["__SOUND_EX_PROGBAR__"].UpdateBar(cl.audio_progress_percentage)
-                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(cl.audio_progress_percentage) + "%")
+                window["__SOUND_EX_PROGBAR__"].UpdateBar(round(cl.audio_progress_percentage))
+                window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(round(cl.audio_progress_percentage)) + "%")
 
                 if(cl.audio_progress_percentage==100 and cl.video_progress_percentage==100):
                     window["__STATUS__"].update("Processing done")
                     process_video_generator = None
-                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                #window["__SOUND_PROGBAR__"].UpdateBar(cl.progress_percentage)
 
             except:
                 window["__STATUS__"].update("Processing failed")
@@ -297,58 +304,52 @@ if __name__ == "__main__":
         if file_generator:
 
             try:
-                f = next(file_generator)
-                window["__INPUT_FILE_LIST__"].update(set_to_index=file_index)
-                file_index += 1
+                if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
+                    f = next(file_generator)
+                    window["__INPUT_FILE_LIST__"].update(set_to_index=file_index)
+                    file_index += 1
 
-                if(values["__OUTPUT_PREFIX_CB__"] == True):
-                    new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
-                else:
-                    new_filename=os.path.basename(f)
+                    if(values["__OUTPUT_PREFIX_CB__"] == True):
+                        new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
+                    else:
+                       new_filename=os.path.basename(f)
 
 
-                if (values["__OUTPUT_FOLDER_CB__"] == True):
-                    output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
-                else:
-                    output_filepath = os.path.dirname(f)+"/"+new_filename
-                    output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
+                    if (values["__OUTPUT_FOLDER_CB__"] == True):
+                        output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
+                    else:
+                        output_filepath = os.path.dirname(f)+"/"+new_filename
+                        output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
 
                     ############################################################################
                     #need to fix output path as input path
 
+                    extension = f[f.rfind("."):].lower()
+
+                    if extension in IMAGE_TYPES:
+                        preview = None
+                        preview_before = None
+                        preview_after = None
+
+                        preview = correct_image(f, output_filepath)
+                        window.Element('__PHOTO_VIEWER__').Update(visible=True)
+                        window.Element('__VIDEO_VIEWER__').Update(visible=False)
 
 
-                #new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
-                #output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
-                #current_in_filename = os.path.basename(f)
-                extension = f[f.rfind("."):].lower()
+                        preview_before = preview[0]
+                        preview_after = preview[1]
+                        window["__PHOTO_NAME__"].update(current_in_filename)
+                        window["__PREVIEW_BEFORE__"](data=preview_before)
+                        window["__PREVIEW_AFTER__"](data=preview_after)
 
-                if extension in IMAGE_TYPES:
-                    preview = None
-                    preview_before = None
-                    preview_after = None
-
-                    preview = correct_image(f, output_filepath)
-                    window.Element('__PHOTO_VIEWER__').Update(visible=True)
-                    window.Element('__VIDEO_VIEWER__').Update(visible=False)
-
-
-                    preview_before = preview[0]
-                    preview_after = preview[1]
-                    window["__PHOTO_NAME__"].update(current_in_filename)
-                    window["__PREVIEW_BEFORE__"](data=preview_before)
-                    window["__PREVIEW_AFTER__"](data=preview_after)
-
-                if extension in VIDEO_TYPES:
-                    window["__STATUS__"].update("Analyzing")
-                    analyze_video_generator = analyze_video(f, output_filepath)
+                    if extension in VIDEO_TYPES:
+                        window["__STATUS__"].update("Analyzing")
+                        analyze_video_generator = analyze_video(f, output_filepath)
 
             except StopIteration:
                 window["__STATUS__"].update("All done!")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
-                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                #window.Element('__PHOTO_VIEWER__').Update(visible=False)
                 file_generator = None
                 file_index = 0
                 analyze_video_generator = None

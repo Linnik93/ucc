@@ -379,6 +379,10 @@ def copy_audio(inputVideoPath, outputVideoPath):
     #define source audiofile
     source_audiofile=sourceVideo.audio
 
+    # init params before calling audio processing
+    #CustomLogger.audio_progress_percentage=0.0
+    #CustomLogger.video_progress_percentage=0.0
+
     # write audio to temp dir
     source_audiofile.write_audiofile(audio_path,logger=audio_proc_logger)
 
@@ -398,6 +402,9 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # replace final video from temp
     # need to fix behaviour with output path
     os.replace(soundedVideoPath,outputVideoPath)
+
+    CustomLogger.audio_progress_percentage=0.0
+    CustomLogger.video_progress_percentage=0.0
 
 def call_thread_copy_audio(inputVideoPath, outputVideoPath):
     """
