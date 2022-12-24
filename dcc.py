@@ -61,7 +61,7 @@ left_column = [
 
 video_viewer = [
     [
-        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center')
+        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
     ],
     [
         sg.Image(key="__VIDEO_PREVIEW__")
@@ -110,7 +110,7 @@ video_viewer = [
 
 photo_viewer = [
     [
-        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center')
+        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True)
     ],
     [
         sg.Text(text="Initial Image:", size=(45, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left')
@@ -309,6 +309,8 @@ if __name__ == "__main__":
                     window["__INPUT_FILE_LIST__"].update(set_to_index=file_index)
                     file_index += 1
 
+                    current_in_filename=os.path.basename(f)
+
                     if(values["__OUTPUT_PREFIX_CB__"] == True):
                         new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
                     else:
@@ -322,7 +324,6 @@ if __name__ == "__main__":
                         output_filepath = os.path.join(values["__OUTPUT_FOLDER__"], new_filename)
 
                     ############################################################################
-                    #need to fix output path as input path
 
                     extension = f[f.rfind("."):].lower()
 
@@ -359,8 +360,7 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("Error in accessing file")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
-                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                #window.Element('__PHOTO_VIEWER__').Update(visible=False)
+
                 file_generator = None
                 file_index = 0
                 analyze_video_generator = None
