@@ -139,7 +139,8 @@ layout = [
     ]
 ]
 
-window = sg.Window("UCC: Underwater Color Corrector", layout, resizable=True, finalize=True)
+#window = sg.Window("UCC: Underwater Color Corrector", layout, resizable=True, finalize=True)
+window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
 window.bind('<Configure>',"Window_Event")
 
 def valid_file(path):
@@ -167,8 +168,22 @@ if __name__ == "__main__":
         if event == sg.WIN_CLOSED:
             break
 
-        #if event == "Window_Event":
-        #    print("Test window resizing: ",window.size)
+        """
+        if event == "Window_Event":
+
+            #window["__OUTPUT_FOLDER_CB__"].visible()
+            #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
+            if(window["__PHOTO_VIEWER__"].visible != True and window["__VIDEO_VIEWER__"].visible!= True):
+                l_width = str(window.size).replace("(","").replace(")","")
+                l_width_split = l_width.split(",")
+                l_width =  int(l_width_split[0]) *0.8
+            window["__INPUT_FILES__"].set_size(size=(l_width,1))
+            window["__INPUT_FILE_LIST__"].set_size(size=(l_width,20))
+        """
+
+
+
+
 
         if event == "__INPUT_FILES__":
 
@@ -261,6 +276,7 @@ if __name__ == "__main__":
                 if (cl.audio_progress_percentage > 99):
                     cl.audio_progress_percentage = 100
                 # need to update before processing video
+
                 window["__SOUND_PROGBAR__"].UpdateBar(round(cl.video_progress_percentage))
                 window["__SOUND_PROGBAR_PERCENTS__"].update(str(round(cl.video_progress_percentage)) + "%")
 
@@ -269,6 +285,7 @@ if __name__ == "__main__":
 
                 percent, preview = next(process_video_generator)
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
+
                 window["__VIDEO_PREVIEW__"](data=preview)
                 status_message = "Processing: {:.2f} %".format(percent)
                 window["__STATUS__"].update(status_message)
@@ -337,17 +354,16 @@ if __name__ == "__main__":
 
                         preview = correct_image(f, output_filepath)
 
-
-
-
                         preview_before = preview[0]
                         preview_after = preview[1]
                         window["__PHOTO_NAME__"].update(current_in_filename)
                         window["__PREVIEW_BEFORE__"](data=preview_before)
                         window["__PREVIEW_AFTER__"](data=preview_after)
 
-                        window.Element('__PHOTO_VIEWER__').Update(visible=True)
                         window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                        window.Element('__PHOTO_VIEWER__').Update(visible=True)
+
+
 
                     if extension in VIDEO_TYPES:
                         window["__STATUS__"].update("Analyzing")
