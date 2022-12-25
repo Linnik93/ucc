@@ -244,6 +244,19 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
+    # clear temp folder
+    if(os.path.exists(temp_dir_path)==False):
+        os.mkdir(temp_dir_path)
+    else:
+        for filename in os.listdir(temp_dir_path):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
     # create colored video path
     video_path_split = video_data["output_video_path"].split("/")
@@ -360,19 +373,6 @@ def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
     temp_dir='Temp'
     temp_dir_path='./'+ temp_dir+'/'
     """
-    if(os.path.exists(temp_dir_path)==False):
-        os.mkdir(temp_dir_path)
-    else:
-        for filename in os.listdir(temp_dir_path):
-            file_path = os.path.join(folder, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print('Failed to delete %s. Reason: %s' % (file_path, e))
-        #print('Temp dir was created')
 
     # Get source video file. Need to extract audio track
     sourceVideo = VideoFileClip(inputVideoPath)

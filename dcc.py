@@ -20,7 +20,7 @@ sg.set_global_icon(LOGO)
 
 left_column = [
     [
-        sg.FilesBrowse(button_text="Select photos and videos", enable_events=True, key='__INPUT_FILES__', size=(52, 1))
+        sg.FilesBrowse(button_text="Select photos and videos", enable_events=True, key='__INPUT_FILES__', size=(52, 1),button_color='sandybrown')
     ],
     [
         sg.Text(text="",font=('Arial', 5))
@@ -34,21 +34,21 @@ left_column = [
     [
         sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
         sg.Text("", size=(1, 1)),
-        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="grey"),
-        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__")
+        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="lightblue"),
+        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
     ],
     [
         sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True,default=True),
         sg.Text(text="", size=(1, 1)),
-        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="grey")
+        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="lightblue")
     ],
     [
         sg.Text(text="", font=('Arial', 5))
     ],
     [
-        sg.Button(button_text="Correct All", enable_events=True, pad=(0, 5), button_color='#cc4827', key="__CORRECT__"),
-        sg.Button(button_text="Cancel", enable_events=True, pad=(140, 5), disabled=True, key="__CANCEL__"),
-        sg.Button(button_text="Clear", enable_events=True, pad=(0, 5), disabled=False, key="__CLEAR_LIST__")
+        sg.Button(button_text="Correct All", enable_events=True, pad=(0, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
+        sg.Button(button_text="Cancel", enable_events=True, pad=(93, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (10,1)),
+        sg.Button(button_text="Clear", enable_events=True, pad=(0, 5), disabled=False, key="__CLEAR_LIST__", button_color='sandybrown',size = (10,1))
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -76,7 +76,7 @@ video_viewer = [
     ],
 
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__PROGBAR__")
     ],
 
     [
@@ -90,7 +90,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_EX_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_EX_PROGBAR__")
     ],
 
     [
@@ -104,7 +104,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_PROGBAR__")
     ]
 ]
 
@@ -113,7 +113,7 @@ photo_viewer = [
         sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True)
     ],
     [
-        sg.Text(text="Initial Image:", size=(45, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left')
+        sg.Text(text="Initial Image:", size=(42, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left')
     ],
     [
 
@@ -133,14 +133,19 @@ photo_viewer = [
 
 layout = [
     [
-        sg.Column(left_column,),
-        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center"),
-        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center")
+        sg.Column(left_column,size=(490, 650)),
+        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490, 650)),
+        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490,650)),
     ]
 ]
 
 #window = sg.Window("UCC: Underwater Color Corrector", layout, resizable=True, finalize=True)
+# Fix scalling level
+sg.set_options(scaling=1.333333333)
+
+
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
+
 window.bind('<Configure>',"Window_Event")
 
 def valid_file(path):
@@ -168,22 +173,10 @@ if __name__ == "__main__":
         if event == sg.WIN_CLOSED:
             break
 
-        """
-        if event == "Window_Event":
+        #if event == "Window_Event":
 
             #window["__OUTPUT_FOLDER_CB__"].visible()
             #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
-            if(window["__PHOTO_VIEWER__"].visible != True and window["__VIDEO_VIEWER__"].visible!= True):
-                l_width = str(window.size).replace("(","").replace(")","")
-                l_width_split = l_width.split(",")
-                l_width =  int(l_width_split[0]) *0.8
-            window["__INPUT_FILES__"].set_size(size=(l_width,1))
-            window["__INPUT_FILE_LIST__"].set_size(size=(l_width,20))
-        """
-
-
-
-
 
         if event == "__INPUT_FILES__":
 
@@ -362,8 +355,6 @@ if __name__ == "__main__":
 
                         window.Element('__VIDEO_VIEWER__').Update(visible=False)
                         window.Element('__PHOTO_VIEWER__').Update(visible=True)
-
-
 
                     if extension in VIDEO_TYPES:
                         window["__STATUS__"].update("Analyzing")
