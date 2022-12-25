@@ -22,6 +22,9 @@ SAMPLE_SECONDS = 2  # Extracts color correction from every N seconds
 
 video_fps = 0.0
 
+# temp folder config
+temp_dir = 'Temp'
+temp_dir_path = './' + temp_dir + '/'
 
 def hue_shift_red(mat, h):
     # print('called hue_shift_red')
@@ -241,6 +244,12 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
+
+    # create colored video path
+    video_path_split = video_data["output_video_path"].split("/")
+    temp_video_name = "temp_clrd_"+video_path_split[len(video_path_split)-1]
+    temp_video_path=temp_dir_path+temp_video_name
+
     cap = cv2.VideoCapture(video_data["input_video_path"])
 
     frame_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -250,8 +259,8 @@ def process_video(video_data, yield_preview=False):
     video_fps = cap.get(cv2.CAP_PROP_FPS)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    new_video = cv2.VideoWriter(video_data["output_video_path"], fourcc, video_fps,
-                                (int(frame_width), int(frame_height)))
+    #new_video = cv2.VideoWriter(video_data["output_video_path"], fourcc, video_fps,(int(frame_width), int(frame_height)))
+    new_video = cv2.VideoWriter(temp_video_path, fourcc, video_fps,(int(frame_width), int(frame_height)))
 
     filter_matrices = video_data["filters"]
     filter_indices = video_data["filter_indices"]
@@ -310,7 +319,7 @@ def process_video(video_data, yield_preview=False):
 
     cap.release()
     new_video.release()
-    call_thread_copy_audio(video_data["input_video_path"], video_data["output_video_path"])
+    call_thread_copy_audio(video_data["input_video_path"], video_data["output_video_path"],temp_video_path)
 
 
 #####################################################################################
@@ -345,13 +354,24 @@ def simplest_cb(img, percent):
 
 
 ################## Adding audio to new video from old video #########################
-def copy_audio(inputVideoPath, outputVideoPath):
+def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
+    """
     # Create temp dir
     temp_dir='Temp'
     temp_dir_path='./'+ temp_dir+'/'
-
+    """
     if(os.path.exists(temp_dir_path)==False):
         os.mkdir(temp_dir_path)
+    else:
+        for filename in os.listdir(temp_dir_path):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
         #print('Temp dir was created')
 
     # Get source video file. Need to extract audio track
@@ -359,7 +379,7 @@ def copy_audio(inputVideoPath, outputVideoPath):
     #print("inputVideoPath: "+inputVideoPath)
 
     # Set colored videofile. Need to merge with extracted audio track
-    coloredVideo = VideoFileClip(outputVideoPath)
+    coloredVideo = VideoFileClip(temp_video_path)
     #print("outputVideoPath: " + outputVideoPath)
 
     # set temp sounded video path
@@ -395,16 +415,26 @@ def copy_audio(inputVideoPath, outputVideoPath):
     final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
 
     try:
-         # remove corrected video without sound and remove audi file from temp dir
+         # remove corrected video without sound from temp dir
          os.remove(outputVideoPath)
-         os.remove(audio_path)
+    except:
+        print("Error with access to file. Can't delete file: "+outputVideoPath)
+
+    try:
+        # remove audio file from temp dir
+        os.remove(audio_path)
+    except:
+        print("Error with access to file. Can't delete file: " + audio_path)
+
+    try:
+        # remove init video file from temp dir
+        os.remove(temp_video_path)
 
     except:
-        print("Error with access to file. Can't delete files: "+outputVideoPath+", " + audio_path )
+        print("Error with access to file. Can't delete file: " + temp_video_path)
 
     try:
         # replace final video from temp
-        # need to fix behaviour with output path
         os.replace(soundedVideoPath, outputVideoPath)
     except:
         print("Error with access to file. Can't move file " + soundedVideoPath + " to " + outputVideoPath)
@@ -412,14 +442,14 @@ def copy_audio(inputVideoPath, outputVideoPath):
     CustomLogger.audio_progress_percentage = 0.0
     CustomLogger.video_progress_percentage = 0.0
 
-def call_thread_copy_audio(inputVideoPath, outputVideoPath):
+def call_thread_copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
     """
     thread_copy_audio = threading.Thread(target=copy_audio)
     thread_copy_audio.daemon = True
     thread_copy_audio.args = (inputVideoPath, outputVideoPath)
     thread_copy_audio.start()
     """
-    thread_01 = threading.Thread(target=copy_audio, args=(inputVideoPath,outputVideoPath,))
+    thread_01 = threading.Thread(target=copy_audio, args=(inputVideoPath,outputVideoPath,temp_video_path,))
     thread_01.start()
 #####################################################################################
 # if __name__ == "__main__":
