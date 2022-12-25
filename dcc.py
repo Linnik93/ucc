@@ -97,7 +97,7 @@ video_viewer = [
         sg.Text(" ", font=('Arial', 15)),
     ],
     [
-        sg.Text("Audio importing progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
+        sg.Text("Video encoding progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
                 justification='left'),
         sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__SOUND_PROGBAR_PERCENTS__",
                 justification='right')
@@ -117,7 +117,7 @@ photo_viewer = [
     ],
     [
 
-        sg.Image( key="__PREVIEW_BEFORE__")
+        sg.Image( key="__PREVIEW_BEFORE__",size=(480,270))
 
     ],
     [
@@ -125,7 +125,7 @@ photo_viewer = [
     ],
     [
 
-        sg.Image(key="__PREVIEW_AFTER__")
+        sg.Image(key="__PREVIEW_AFTER__",size=(480,270))
 
     ],
 
@@ -133,14 +133,14 @@ photo_viewer = [
 
 layout = [
     [
-        sg.Column(left_column),
+        sg.Column(left_column,),
         sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center"),
         sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center")
     ]
 ]
 
 window = sg.Window("UCC: Underwater Color Corrector", layout, resizable=True, finalize=True)
-
+window.bind('<Configure>',"Window_Event")
 
 def valid_file(path):
     extension = path[path.rfind("."):].lower()
@@ -166,6 +166,9 @@ if __name__ == "__main__":
 
         if event == sg.WIN_CLOSED:
             break
+
+        #if event == "Window_Event":
+        #    print("Test window resizing: ",window.size)
 
         if event == "__INPUT_FILES__":
 
@@ -330,9 +333,11 @@ if __name__ == "__main__":
                         preview_before = None
                         preview_after = None
 
+                        #if '__PHOTO_VIEWER__' in window.AllKeysDict: print(key + 'exists')
+
                         preview = correct_image(f, output_filepath)
-                        window.Element('__PHOTO_VIEWER__').Update(visible=True)
-                        window.Element('__VIDEO_VIEWER__').Update(visible=False)
+
+
 
 
                         preview_before = preview[0]
@@ -340,6 +345,9 @@ if __name__ == "__main__":
                         window["__PHOTO_NAME__"].update(current_in_filename)
                         window["__PREVIEW_BEFORE__"](data=preview_before)
                         window["__PREVIEW_AFTER__"](data=preview_after)
+
+                        window.Element('__PHOTO_VIEWER__').Update(visible=True)
+                        window.Element('__VIDEO_VIEWER__').Update(visible=False)
 
                     if extension in VIDEO_TYPES:
                         window["__STATUS__"].update("Analyzing")

@@ -310,7 +310,6 @@ def process_video(video_data, yield_preview=False):
 
     cap.release()
     new_video.release()
-    #copy_audio(video_data["input_video_path"], video_data["output_video_path"])
     call_thread_copy_audio(video_data["input_video_path"], video_data["output_video_path"])
 
 
@@ -395,16 +394,23 @@ def copy_audio(inputVideoPath, outputVideoPath):
     # Write final video file
     final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
 
-    # remove corrected video without sound and remove audi file from temp dir
-    os.remove(outputVideoPath)
-    os.remove(audio_path)
+    try:
+         # remove corrected video without sound and remove audi file from temp dir
+         os.remove(outputVideoPath)
+         os.remove(audio_path)
 
-    # replace final video from temp
-    # need to fix behaviour with output path
-    os.replace(soundedVideoPath,outputVideoPath)
+    except:
+        print("Error with access to file. Can't delete files: "+outputVideoPath+", " + audio_path )
 
-    CustomLogger.audio_progress_percentage=0.0
-    CustomLogger.video_progress_percentage=0.0
+    try:
+        # replace final video from temp
+        # need to fix behaviour with output path
+        os.replace(soundedVideoPath, outputVideoPath)
+    except:
+        print("Error with access to file. Can't move file " + soundedVideoPath + " to " + outputVideoPath)
+
+    CustomLogger.audio_progress_percentage = 0.0
+    CustomLogger.video_progress_percentage = 0.0
 
 def call_thread_copy_audio(inputVideoPath, outputVideoPath):
     """
