@@ -34,13 +34,13 @@ left_column = [
     [
         sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
         sg.Text("", size=(1, 1)),
-        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="lightblue"),
+        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
         sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
     ],
     [
         sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True,default=True),
         sg.Text(text="", size=(1, 1)),
-        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="lightblue")
+        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="darkgray")
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -70,13 +70,13 @@ video_viewer = [
         sg.Text(" ", font=('Arial', 15), key="__PROGBAR_BR__"),
     ],
     [
-        sg.Text("Color restoration video progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",justification='left'),
+        sg.Text("Color restoration progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",justification='left'),
         sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__PROGBAR_PERCENTS__",justification='right')
 
     ],
 
     [
-        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__PROGBAR__")
     ],
 
     [
@@ -90,7 +90,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_EX_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_EX_PROGBAR__")
     ],
 
     [
@@ -104,7 +104,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_PROGBAR__")
     ]
 ]
 
@@ -263,7 +263,6 @@ if __name__ == "__main__":
 
         if process_video_generator:
             try:
-
                 if (cl.video_progress_percentage > 99):
                     cl.video_progress_percentage = 100
                 if (cl.audio_progress_percentage > 99):
@@ -303,9 +302,10 @@ if __name__ == "__main__":
                 window["__SOUND_EX_PROGBAR__"].UpdateBar(round(cl.audio_progress_percentage))
                 window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(round(cl.audio_progress_percentage)) + "%")
 
-                if(cl.audio_progress_percentage==100 and cl.video_progress_percentage==100):
+                if(round(percent)==100):
                     window["__STATUS__"].update("Processing done")
                     process_video_generator = None
+
 
             except:
                 window["__STATUS__"].update("Processing failed")
@@ -350,6 +350,7 @@ if __name__ == "__main__":
                         preview_before = preview[0]
                         preview_after = preview[1]
                         window["__PHOTO_NAME__"].update(current_in_filename)
+
                         window["__PREVIEW_BEFORE__"](data=preview_before)
                         window["__PREVIEW_AFTER__"](data=preview_after)
 
