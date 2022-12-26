@@ -289,6 +289,8 @@ if __name__ == "__main__":
                     else:
                         status_message = "Video encoding processing: {:} %".format(round(cl.video_progress_percentage))
                 """
+
+
                 window["__STATUS__"].update(status_message)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
