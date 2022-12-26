@@ -54,7 +54,7 @@ left_column = [
         sg.Text(text="", font=('Arial', 5))
     ],
     [
-        sg.Text(text="", size=(27, 1), text_color='black', key="__STATUS__")
+        sg.Text(text="", size=(35, 1), text_color='black', key="__STATUS__")
     ]
 ]
 
@@ -279,7 +279,16 @@ if __name__ == "__main__":
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
 
                 window["__VIDEO_PREVIEW__"](data=preview)
-                status_message = "Processing: {:.2f} %".format(percent)
+                status_message = "Color restoration processing: {:} %".format(round(percent))
+                """
+                if(round(percent)<100):
+                    status_message = "Color restoration processing: {:} %".format(round(percent))
+                else:
+                    if(round(cl.audio_progress_percentage)<100 and round(cl.video_progress_percentage)<100):
+                        status_message = "Audio extraction processing: {:} %".format(round(cl.audio_progress_percentage))
+                    else:
+                        status_message = "Video encoding processing: {:} %".format(round(cl.video_progress_percentage))
+                """
                 window["__STATUS__"].update(status_message)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
@@ -302,7 +311,7 @@ if __name__ == "__main__":
                 window["__SOUND_EX_PROGBAR__"].UpdateBar(round(cl.audio_progress_percentage))
                 window["__SOUND_EX_PROGBAR_PERCENTS__"].update(str(round(cl.audio_progress_percentage)) + "%")
 
-                if(round(percent)==100):
+                if(cl.audio_progress_percentage==100 and cl.video_progress_percentage==100):
                     window["__STATUS__"].update("Processing done")
                     process_video_generator = None
 
