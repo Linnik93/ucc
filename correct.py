@@ -361,6 +361,8 @@ def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
     temp_dir='Temp'
     temp_dir_path='./'+ temp_dir+'/'
     """
+    #CustomLogger.audio_progress_percentage = 0.0
+    #CustomLogger.video_progress_percentage = 0.0
 
     # Get source video file. Need to extract audio track
     sourceVideo = VideoFileClip(inputVideoPath)

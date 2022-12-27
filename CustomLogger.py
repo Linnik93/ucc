@@ -12,6 +12,7 @@ class VideoLogger(ProgressBarLogger):
                 video_progress_percentage=next(reversed(self.bars.items()))[1]['index']/next(reversed(self.bars.items()))[1]['total']
                 if(video_progress_percentage>=0):
                     video_progress_percentage=video_progress_percentage*100
+                    #print("Test: ",next(reversed(self.bars.items())))
 
 
 video_proc_logger = VideoLogger()

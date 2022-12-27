@@ -282,14 +282,15 @@ if __name__ == "__main__":
                 status_message = "Color restoration processing: {:} %".format(round(percent))
 
                 window["__STATUS__"].update(status_message)
+
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
                 if(percent>99):
                     percent=100
                 window["__PROGBAR_PERCENTS__"].update(str(round(percent)) + "%")
                 window["__PROGBAR__"].UpdateBar(round(percent))
-
                 window["__VIDEO_NAME__"].update(current_in_filename)
+
 
             except StopIteration:
 
@@ -305,7 +306,13 @@ if __name__ == "__main__":
 
 
 
-                if(cl.audio_progress_percentage==100 and cl.video_progress_percentage==100):
+                if(cl.audio_progress_percentage>0 and cl.video_progress_percentage==0.0):
+                    window["__STATUS__"].update("Audio extraction processing: {:} %".format(round(cl.audio_progress_percentage)))
+                if (cl.audio_progress_percentage == 100 and cl.video_progress_percentage <100):
+                    window["__STATUS__"].update("Video encoding processing: {:} %".format(round(cl.video_progress_percentage)))
+
+
+                if(round(cl.audio_progress_percentage)==100 and round(cl.video_progress_percentage)==100):
                     window["__STATUS__"].update("Processing done")
                     process_video_generator = None
 
@@ -371,6 +378,8 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("All done!")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
+                window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                window.Element('__PHOTO_VIEWER__').Update(visible=False)
                 file_generator = None
                 file_index = 0
                 analyze_video_generator = None
