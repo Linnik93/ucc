@@ -24,7 +24,7 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",)
+        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",select_mode='multiple')
     ],
     [
         sg.Text(text="",font=('Arial', 5))
@@ -322,9 +322,11 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    window["__INPUT_FILE_LIST__"].update(set_to_index=file_index)
+                    listbox_hight_rows = 20
+                    window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
+                    if(file_index%listbox_hight_rows==0):
+                        window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
                     file_index += 1
-
                     current_in_filename=os.path.basename(f)
 
                     if(values["__OUTPUT_PREFIX_CB__"] == True):
