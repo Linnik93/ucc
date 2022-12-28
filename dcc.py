@@ -217,6 +217,7 @@ if __name__ == "__main__":
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=True)
 
+
         if event == "__CANCEL__":
             window["__CORRECT__"].update(disabled=False)
             window["__CANCEL__"].update(disabled=False)
