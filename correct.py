@@ -1,16 +1,16 @@
 import os
 import sys
+import threading
+
 import numpy as np
 import cv2
 import math
-#from moviepy.editor import *
 
-from imageio.plugins import ffmpeg
+from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-#from moviepy.video.io.VideoFileClip import VideoFileClip
-
-
+import CustomLogger
+from CustomLogger import video_proc_logger, audio_proc_logger
 
 ###############  underwater color correction #####################################
 
@@ -20,7 +20,11 @@ MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1.2
 SAMPLE_SECONDS = 2  # Extracts color correction from every N seconds
 
-video_fps=0.0
+video_fps = 0.0
+
+# temp folder config
+temp_dir = 'Temp'
+temp_dir_path = './' + temp_dir + '/'
 
 def hue_shift_red(mat, h):
     # print('called hue_shift_red')
@@ -176,16 +180,18 @@ def correct_image(input_path, output_path):
 
     cv2.imwrite(output_path, corrected_mat)
 
-    preview = mat.copy()
-    width = preview.shape[1] // 2
-    preview[::, width:] = corrected_mat[::, width:]
-
-    preview = cv2.resize(preview, (960, 540))
-
-    return cv2.imencode('.png', preview)[1].tobytes()
+    preview_bfr = mat.copy()
+    #width = preview.shape[1] // 2
+    #preview[::, width:] = corrected_mat[::, width:]
+    preview_ftr= corrected_mat
+    preview_bfr = cv2.resize(preview_bfr, (480, 270))
+    preview_ftr = cv2.resize(preview_ftr, (480, 270))
+    preview_imgs = [cv2.imencode('.png', preview_bfr)[1].tobytes(), cv2.imencode('.png', preview_ftr)[1].tobytes()]
+    return preview_imgs
 
 
 def analyze_video(input_video_path, output_video_path):
+
     # Initialize new video writer
     cap = cv2.VideoCapture(input_video_path)
     fps = math.ceil(cap.get(cv2.CAP_PROP_FPS))
@@ -238,16 +244,24 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
+
+
+    # create colored video path
+    video_path_split = video_data["output_video_path"].split("/")
+    temp_video_name = "temp_clrd_"+video_path_split[len(video_path_split)-1]
+    temp_video_path=temp_dir_path+temp_video_name
+
     cap = cv2.VideoCapture(video_data["input_video_path"])
 
     frame_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     frame_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    #video_FourCC = cap.get(cv2.CAP_PROP_FOURCC)
-    #video_FourCC = cv2.VideoWriter_fourcc(*'hvc1')
+    # video_FourCC = cap.get(cv2.CAP_PROP_FOURCC)
+    # video_FourCC = cv2.VideoWriter_fourcc(*'hvc1')
     video_fps = cap.get(cv2.CAP_PROP_FPS)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    new_video = cv2.VideoWriter(video_data["output_video_path"], fourcc, video_fps, (int(frame_width), int(frame_height)))
+
+    new_video = cv2.VideoWriter(temp_video_path, fourcc, video_fps,(int(frame_width), int(frame_height)))
 
     filter_matrices = video_data["filters"]
     filter_indices = video_data["filter_indices"]
@@ -298,17 +312,16 @@ def process_video(video_data, yield_preview=False):
             height = preview.shape[0] // 2
             preview[::, width:] = corrected_mat[::, width:]
 
-            preview = cv2.resize(preview, (960, 540))
+            preview = cv2.resize(preview, (480, 270))
 
             yield percent, cv2.imencode('.png', preview)[1].tobytes()
         else:
             yield None
 
-
     cap.release()
     new_video.release()
-    print("calling audio")
-    copy_audio(video_data["input_video_path"],video_data["output_video_path"])
+    call_thread_copy_audio(video_data["input_video_path"], video_data["output_video_path"],temp_video_path)
+
 
 #####################################################################################
 ################ color balance correction ###########################################
@@ -342,43 +355,111 @@ def simplest_cb(img, percent):
 
 
 ################## Adding audio to new video from old video #########################
-def copy_audio(inputVideoPath, outputVideoPath):
-    # Get source video file
+def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
+    """
+    # Create temp dir
+    temp_dir='Temp'
+    temp_dir_path='./'+ temp_dir+'/'
+    """
+    #CustomLogger.audio_progress_percentage = 0.0
+    #CustomLogger.video_progress_percentage = 0.0
+
+    # Get source video file. Need to extract audio track
     sourceVideo = VideoFileClip(inputVideoPath)
-    # Set colored videofile
-    coloredVideo = VideoFileClip(outputVideoPath)
-    # set sounded video
-    soundedVideoPath = outputVideoPath.replace(".mp4","")+"_temp.mp4"
-    # Set audio from source video to res video
-    final_clip = coloredVideo.set_audio(sourceVideo.audio)
-    # Write final file
-    #final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, progress_bar=False, verbose=False)
-    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps,logger=None)
-    # remove muted file
-    os.remove(outputVideoPath)
-    # rename result file
-    os.rename(soundedVideoPath, soundedVideoPath.replace("_temp.mp4",".mp4"))
-    
+    #print("inputVideoPath: "+inputVideoPath)
+
+    # Set colored videofile. Need to merge with extracted audio track
+    coloredVideo = VideoFileClip(temp_video_path)
+    #print("outputVideoPath: " + outputVideoPath)
+
+    # set temp sounded video path
+    #get name of video file
+    splitted_path_array = inputVideoPath.split("/")
+    in_filename = splitted_path_array[len(splitted_path_array)-1]
+    #print("in_filename: " + in_filename)
+    soundedVideoPath = temp_dir_path+"temp_"+in_filename
+    #print("soundedVideoPath: " + soundedVideoPath)
+
+    # set temp audio file name and path
+    audio = 'temp_'+in_filename.replace("mp4", "mp3")
+    audio_path = temp_dir_path+audio
+    #print("audio_path: " + audio_path)
+
+    #define source audiofile
+    source_audiofile=sourceVideo.audio
+
+    # init params before calling audio processing
+    #CustomLogger.audio_progress_percentage=0.0
+    #CustomLogger.video_progress_percentage=0.0
+
+    # write audio to temp dir
+    source_audiofile.write_audiofile(audio_path,logger=audio_proc_logger)
+
+    # loading recorded audio file
+    audioclip = AudioFileClip(audio_path)
+
+    # Set audio from source video to final video
+    final_clip = coloredVideo.set_audio(audioclip)
+
+    # Write final video file
+    final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
+    """
+    try:
+         # remove corrected video without sound from temp dir
+         #os.remove(outputVideoPath)
+    except:
+        #print("Error with access to file. Can't delete file: "+outputVideoPath)
+        
+    """
 
 
+    try:
+        # remove audio file from temp dir
+        os.remove(audio_path)
+    except:
+        print("Error with access to file. Can't delete file: " + audio_path)
 
+    try:
+        # remove init video file from temp dir
+        os.remove(temp_video_path)
 
+    except:
+        print("Error with access to file. Can't delete file: " + temp_video_path)
+
+    try:
+        # replace final video from temp
+        os.replace(soundedVideoPath, outputVideoPath)
+    except:
+        print("Error with access to file. Can't move file " + soundedVideoPath + " to " + outputVideoPath)
+
+    CustomLogger.audio_progress_percentage = 0.0
+    CustomLogger.video_progress_percentage = 0.0
+
+def call_thread_copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
+    """
+    thread_copy_audio = threading.Thread(target=copy_audio)
+    thread_copy_audio.daemon = True
+    thread_copy_audio.args = (inputVideoPath, outputVideoPath)
+    thread_copy_audio.start()
+    """
+    thread_01 = threading.Thread(target=copy_audio, args=(inputVideoPath,outputVideoPath,temp_video_path,))
+    thread_01.start()
 #####################################################################################
-#if __name__ == "__main__":
-    #T###################Test for photo##################################
-    # inputImage = "./data/f0664064.jpg"
-    # outputImage = "./data/out_f0664064.jpg"
-    # mat = cv2.imread(inputImage)
-    # mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
-    # corrected_mat = correct(mat)
-    ################ Contrast and Brightness setting ###################
-    # alpha = 1.1 # Contrast control (1.0-3.0)
-    # beta = -1 # Brightness control (0-100)
-    # corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
-    ####################################################################
-    # cv2.imwrite(outputImage, corrected_mat)
+# if __name__ == "__main__":
+# T###################Test for photo##################################
+# inputImage = "./data/f0664064.jpg"
+# outputImage = "./data/out_f0664064.jpg"
+# mat = cv2.imread(inputImage)
+# mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
+# corrected_mat = correct(mat)
+################ Contrast and Brightness setting ###################
+# alpha = 1.1 # Contrast control (1.0-3.0)
+# beta = -1 # Brightness control (0-100)
+# corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
+####################################################################
+# cv2.imwrite(outputImage, corrected_mat)
 
-    ################ Test for video ##############################
+################ Test for video ##############################
 """"    
 inputVideo = "D:/Color correction test/YDXJ0084.mp4"
 outputVideo = "D:/Color correction test/YDXJ0084_corrected.mp4"
