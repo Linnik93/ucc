@@ -379,8 +379,8 @@ if __name__ == "__main__":
                 window["__STATUS__"].update("All done!")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
-                window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                window.Element('__PHOTO_VIEWER__').Update(visible=False)
+                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                #window.Element('__PHOTO_VIEWER__').Update(visible=False)
                 file_generator = None
                 file_index = 0
                 analyze_video_generator = None

@@ -6,9 +6,11 @@ import threading
 import numpy as np
 import cv2
 import math
+import skimage
 
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from skimage import img_as_ubyte
 
 import CustomLogger
 from CustomLogger import video_proc_logger, audio_proc_logger
@@ -162,18 +164,26 @@ def get_filter_matrix(mat):
         0, 0, blue_gain, 0, blueOffset,
         0, 0, 0, 1, 0,
     ])
+###########################################################################
+# White balance
 
+def white_balance(img):
+    result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    avg_a = np.average(result[:, :, 1])
+    avg_b = np.average(result[:, :, 2])
+    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] / 255.0) * 1.1)
+    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] / 255.0) * 1.1)
+    result = cv2.cvtColor(result, cv2.COLOR_LAB2BGR)
+    return result
+###########################################################################
 
 def correct(mat):
     #  print('called correct')
     original_mat = mat.copy()
-
     filter_matrix = get_filter_matrix(mat)
-
     corrected_mat = apply_filter(original_mat, filter_matrix)
     corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-    corrected_mat = simplest_cb(corrected_mat, 1)
-
+    corrected_mat = balance_colors(corrected_mat, 1)
     return corrected_mat
 
 
@@ -319,7 +329,7 @@ def process_video(video_data, yield_preview=False):
         interpolated_filter_matrix = get_interpolated_filter_matrix(count)
         corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-        corrected_mat = simplest_cb(corrected_mat, 1)
+        corrected_mat = balance_colors(corrected_mat, 1)
 
         new_video.write(corrected_mat)
 
@@ -357,7 +367,7 @@ def apply_threshold(matrix, low_value, high_value):
     return matrix
 
 
-def simplest_cb(img, percent):
+def balance_colors(img, percent=1):
     out_channels = []
     channels = cv2.split(img)
     totalstop = channels[0].shape[0] * channels[0].shape[1] * percent / 200.0
