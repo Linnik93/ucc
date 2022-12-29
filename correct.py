@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import threading
 
@@ -18,7 +19,11 @@ THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1.2
-SAMPLE_SECONDS = 2  # Extracts color correction from every N seconds
+# Extracts color correction from every N seconds
+#if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
+SAMPLE_SECONDS = 2
+
+
 
 video_fps = 0.0
 
@@ -221,10 +226,22 @@ def analyze_video(input_video_path, output_video_path):
             continue
 
         # Pick filter matrix from every N seconds
-        if count % (fps * SAMPLE_SECONDS) == 0:
-            mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            filter_matrix_indexes.append(count)
-            filter_matrices.append(get_filter_matrix(mat))
+        if(SAMPLE_SECONDS>0):
+            if count % (fps * SAMPLE_SECONDS) == 0:
+                mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                filter_matrix_indexes.append(count)
+                filter_matrices.append(get_filter_matrix(mat))
+        else:
+            if(SAMPLE_SECONDS==0):
+                mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                filter_matrix_indexes.append(count)
+                filter_matrices.append(get_filter_matrix(mat))
+            else:
+                if(SAMPLE_SECONDS==-1):
+                    if(count==1):
+                        mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        filter_matrix_indexes.append(count)
+                        filter_matrices.append(get_filter_matrix(mat))
 
         yield count
 
@@ -381,7 +398,7 @@ def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
     #print("soundedVideoPath: " + soundedVideoPath)
 
     # set temp audio file name and path
-    audio = 'temp_'+in_filename.replace("mp4", "mp3")
+    audio = 'temp_'+in_filename.replace("mp4", "mp3").replace("MP4","mp3")
     audio_path = temp_dir_path+audio
     #print("audio_path: " + audio_path)
 
@@ -392,45 +409,37 @@ def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
     #CustomLogger.audio_progress_percentage=0.0
     #CustomLogger.video_progress_percentage=0.0
 
+
     # write audio to temp dir
-    source_audiofile.write_audiofile(audio_path,logger=audio_proc_logger)
-
-    # loading recorded audio file
-    audioclip = AudioFileClip(audio_path)
-
-    # Set audio from source video to final video
-    final_clip = coloredVideo.set_audio(audioclip)
-
-    # Write final video file
+    source_audiofile.write_audiofile(audio_path,logger=audio_proc_logger)   # loading recorded audio file
+    audioclip = AudioFileClip(audio_path)   # Set audio from source video to final video
+    final_clip = coloredVideo.set_audio(audioclip)   # Write final video file
     final_clip.write_videofile(soundedVideoPath, sourceVideo.fps, logger=video_proc_logger)
-    """
-    try:
-         # remove corrected video without sound from temp dir
-         #os.remove(outputVideoPath)
-    except:
-        #print("Error with access to file. Can't delete file: "+outputVideoPath)
-        
-    """
-
 
     try:
         # remove audio file from temp dir
-        os.remove(audio_path)
+        if(os.path.isfile(audio_path)):
+            os.remove(audio_path)
     except:
         print("Error with access to file. Can't delete file: " + audio_path)
 
     try:
         # remove init video file from temp dir
-        os.remove(temp_video_path)
+        if (os.path.isfile(temp_video_path)):
+            os.remove(temp_video_path)
 
     except:
         print("Error with access to file. Can't delete file: " + temp_video_path)
 
     try:
         # replace final video from temp
-        os.replace(soundedVideoPath, outputVideoPath)
+        if (os.path.isfile(soundedVideoPath)):
+            os.replace(soundedVideoPath, outputVideoPath)
+
     except:
         print("Error with access to file. Can't move file " + soundedVideoPath + " to " + outputVideoPath)
+
+
 
     CustomLogger.audio_progress_percentage = 0.0
     CustomLogger.video_progress_percentage = 0.0

@@ -24,7 +24,7 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",select_mode='multiple')
+        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",select_mode='multiple',)
     ],
     [
         sg.Text(text="",font=('Arial', 5))
