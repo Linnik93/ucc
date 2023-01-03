@@ -18,11 +18,15 @@ from CustomLogger import video_proc_logger, audio_proc_logger
 
 ###############  underwater color correction #####################################
 
-THRESHOLD_RATIO = 2000
+THRESHOLD_RATIO = 4000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 
 BLUE_MAGIC_VALUE = 1.4
+
+#90 - max,0 -min
+gain_ajust = 20
+#gain_ajust_array = [0.0,0.025,0.05,0.075,0.1,0.075,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.45,1.5,1.55,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3,4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90]
 
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
@@ -171,8 +175,8 @@ def white_balance(img,wb_factor):
     result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     avg_a = np.average(result[:, :, 1])
     avg_b = np.average(result[:, :, 2])
-    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] / 255.0) * wb_factor)
-    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] / 255.0) * wb_factor)
+    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] * wb_factor / 255.0) )
+    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] * wb_factor/ 255.0) )
     result = cv2.cvtColor(result, cv2.COLOR_LAB2BGR)
     return result
 
@@ -196,13 +200,19 @@ def adjust_brightness(img, brightness_factor):
 
 def correct(mat):
     original_mat = mat.copy()
-    filter_matrix = get_filter_matrix(mat)
+    #filter_matrix = get_filter_matrix(mat)
+    #corrected_mat = apply_filter(original_mat, filter_matrix)
+    if(gain_ajust!=0):
+        filter_matrix = get_filter_matrix(mat)
+        corrected_mat = apply_filter(original_mat, filter_matrix)
+        corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+        # color balance for final image
+        corrected_mat = balance_colors(corrected_mat, gain_ajust)
+    else:
+        corrected_mat=cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
 
-    corrected_mat = apply_filter(original_mat, filter_matrix)
+    #corrected_mat = white_balance(corrected_mat, 1.1)
 
-    corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-    # color balance for final image
-    corrected_mat = balance_colors(corrected_mat, 1)
 
 ############################################################
     # change saturation level
@@ -365,7 +375,7 @@ def process_video(video_data, yield_preview=False):
         interpolated_filter_matrix = get_interpolated_filter_matrix(count)
         corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-        corrected_mat = balance_colors(corrected_mat, 1)
+        corrected_mat = balance_colors(corrected_mat, gain_ajust)
 
 
         new_video.write(corrected_mat)
@@ -404,7 +414,7 @@ def apply_threshold(matrix, low_value, high_value):
     return matrix
 
 
-def balance_colors(img, percent=1):
+def balance_colors(img, percent):
     out_channels = []
     channels = cv2.split(img)
     #print("channels: "+len(channels[0]))
