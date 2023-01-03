@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 import math
 import skimage
+from PIL import Image, ImageEnhance, ImageFilter
 
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
@@ -20,15 +21,14 @@ from CustomLogger import video_proc_logger, audio_proc_logger
 THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
-BLUE_MAGIC_VALUE = 1.2
+
+BLUE_MAGIC_VALUE = 1.4
+
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
 SAMPLE_SECONDS = 2
 
-
-
 video_fps = 0.0
-
 # temp folder config
 temp_dir = 'Temp'
 temp_dir_path = './' + temp_dir + '/'
@@ -167,23 +167,59 @@ def get_filter_matrix(mat):
 ###########################################################################
 # White balance
 
-def white_balance(img):
+def white_balance(img,wb_factor):
     result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     avg_a = np.average(result[:, :, 1])
     avg_b = np.average(result[:, :, 2])
-    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] / 255.0) * 1.1)
-    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] / 255.0) * 1.1)
+    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] / 255.0) * wb_factor)
+    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] / 255.0) * wb_factor)
     result = cv2.cvtColor(result, cv2.COLOR_LAB2BGR)
     return result
+
+def cv2_enhance_contrast(img, factor):
+    mean = np.uint8(cv2.mean(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))[0])
+    img_deg = np.ones_like(img) * mean
+    return cv2.addWeighted(img, factor, img_deg, 1-factor, 0.0)
+
+def adjust_saturation(img, saturation_factor):
+    enhancer = ImageEnhance.Color(img)
+    img = enhancer.enhance(saturation_factor)
+    return img
+
+def adjust_brightness(img, brightness_factor):
+    enhancer = ImageEnhance.Brightness(img)
+    img = enhancer.enhance(brightness_factor)
+    return img
+
+
 ###########################################################################
 
 def correct(mat):
-    #  print('called correct')
     original_mat = mat.copy()
     filter_matrix = get_filter_matrix(mat)
+
     corrected_mat = apply_filter(original_mat, filter_matrix)
+
     corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+    # color balance for final image
     corrected_mat = balance_colors(corrected_mat, 1)
+
+############################################################
+    # change saturation level
+    # Convert BGR to RGB
+    #opencv_img = cv2.cvtColor(corrected_mat, cv2.COLOR_BGR2RGB)
+
+    #Get array of image
+    #pil_image = Image.fromarray(opencv_img)
+    # change saturation
+    #new_img = adjust_saturation(pil_image, 1.5)
+
+    #filter2 = ImageEnhance.Brightness(pil_image)
+    #new_img = adjust_brightness(pil_image, 1.5)
+    #new_img = adjust_saturation(new_img,1.5)
+
+    #new_img.show()
+###############################################################
     return corrected_mat
 
 
@@ -331,6 +367,7 @@ def process_video(video_data, yield_preview=False):
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
         corrected_mat = balance_colors(corrected_mat, 1)
 
+
         new_video.write(corrected_mat)
 
         if yield_preview:
@@ -370,14 +407,18 @@ def apply_threshold(matrix, low_value, high_value):
 def balance_colors(img, percent=1):
     out_channels = []
     channels = cv2.split(img)
+    #print("channels: "+len(channels[0]))
     totalstop = channels[0].shape[0] * channels[0].shape[1] * percent / 200.0
+
     for channel in channels:
+
         bc = cv2.calcHist([channel], [0], None, [256], (0, 256), accumulate=False)
         lv = np.searchsorted(np.cumsum(bc), totalstop)
         hv = 255 - np.searchsorted(np.cumsum(bc[::-1]), totalstop)
         lut = np.array([0 if i < lv else (255 if i > hv else round(float(i - lv) / float(hv - lv) * 255)) for i in
                         np.arange(0, 256)], dtype="uint8")
         out_channels.append(cv2.LUT(channel, lut))
+
     return cv2.merge(out_channels)
 
 

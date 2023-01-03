@@ -3,6 +3,7 @@ import sys
 import PySimpleGUI as sg
 import os
 import CustomLogger as cl
+import correct
 from correct import correct_image, analyze_video, process_video
 
 progress_val = ''
@@ -16,6 +17,8 @@ sg.theme('SandyBeach')
 sg.set_options(font=("Arial", 13))
 sg.set_global_icon(LOGO)
 
+TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
+
 left_column = [
     [
         sg.FilesBrowse(button_text="Select photos and videos", enable_events=True, key='__INPUT_FILES__', size=(52, 1),button_color='sandybrown')
@@ -24,10 +27,16 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 20), key="__INPUT_FILE_LIST__",select_mode='multiple',)
+        sg.Listbox(values=[], enable_events=True, size=(51, 18), key="__INPUT_FILE_LIST__",select_mode='multiple',)
     ],
     [
         sg.Text(text="",font=('Arial', 5))
+    ],
+    [
+        sg.CBox(text="Temp. folder", key = "__TEMP_FOLDER_CB__", enable_events=True),
+        sg.Text("", size=(4, 1)),
+        sg.InputText(default_text=TempDirPath, size=(21, 1), enable_events=True, readonly=False, key="__TEMP_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
+        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__TEMP_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
     ],
     [
         sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
@@ -49,7 +58,7 @@ left_column = [
         sg.Button(button_text="Clear", enable_events=True, pad=(0, 5), disabled=False, key="__CLEAR_LIST__", button_color='sandybrown',size = (10,1))
     ],
     [
-        sg.Text(text="", font=('Arial', 5))
+        sg.Text(text="", font=('Arial', 1))
     ],
     [
         sg.Text(text="", size=(35, 1), text_color='black', key="__STATUS__")
@@ -142,6 +151,9 @@ layout = [
 sg.set_options(scaling=1.333333333)
 
 
+
+
+
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
 
 window.bind('<Configure>',"Window_Event")
@@ -164,6 +176,7 @@ analyze_video_generator = None
 process_video_generator = None
 
 if __name__ == "__main__":
+
 
     while True:
         event, values = window.read(1)
@@ -198,6 +211,16 @@ if __name__ == "__main__":
                 window["__OUTPUT_FOLDER__"].update(disabled=False)
                 window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
                 window["__OUTPUT_PREFIX__"].update(disabled=True)
+
+        if event == "__TEMP_FOLDER_CB__":
+            if (values["__TEMP_FOLDER_CB__"] == False):
+                window["__TEMP_FOLDER__"].update(disabled=True)
+                window["__TEMP_FOLDER_BROWSE_BUTTON__"].update(disabled=True)
+                window["__TEMP_FOLDER__"].update(value=TempDirPath)
+
+            else:
+                window["__TEMP_FOLDER__"].update(disabled=False)
+                window["__TEMP_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
 
         if event == "__OUTPUT_PREFIX_CB__":
 
@@ -326,11 +349,17 @@ if __name__ == "__main__":
             continue
 
         if file_generator:
+            correct.temp_dir_path = values["__TEMP_FOLDER__"]
+            if(os.path.exists(correct.temp_dir_path)!=True):
+                try:
+                    os.mkdir(correct.temp_dir_path)
+                except:
+                    print("Can't create ", correct.temp_dir_path," "+"folder.")
 
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 20
+                    listbox_hight_rows = 18
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
