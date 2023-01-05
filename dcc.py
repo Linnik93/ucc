@@ -27,12 +27,24 @@ left_column = [
         sg.Text(text="",font=('Arial', 5))
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 16), key="__INPUT_FILE_LIST__",select_mode='multiple',)
+        sg.Listbox(values=[], enable_events=True, size=(51, 13), key="__INPUT_FILE_LIST__",select_mode='multiple',)
     ],
     [
-        sg.CBox(text="Manual gain adjust ", key = "__GAIN_ADJUST_CB__", enable_events=True),
-        sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(32.7, 10), orientation='h', font=('Arial', 10), key="__GAIN ADJUST_SLIDER__", disabled=True, enable_events=True),
+        sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
+        sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
     ],
+    [
+        sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
+        sg.Slider(range=(0.0, 2), default_value=1.1, resolution=.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True),
+    ],
+
+    [
+        sg.CBox(text="Manual color balance    ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0.0, 10), default_value=1, resolution=.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
+    ],
+
     [
         sg.Text(text="",font=('Arial', 5))
     ],
@@ -216,15 +228,35 @@ if __name__ == "__main__":
                 window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
                 window["__OUTPUT_PREFIX__"].update(disabled=True)
 
-        if event == "__GAIN_ADJUST_CB__":
-            if (values["__GAIN_ADJUST_CB__"] == True):
-                window["__GAIN ADJUST_SLIDER__"].update(disabled=False)
+        if event == "__BLUE_LEVEL_CB__":
+            if (values["__BLUE_LEVEL_CB__"] == True):
+                window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
             else:
-                window["__GAIN ADJUST_SLIDER__"].update(disabled=True)
+                window["__BLUE_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__BLUE_LEVEL_SLIDER__":
+            if(values["__BLUE_LEVEL_SLIDER__"]!=correct.gain_ajust):
+                correct.gain_ajust = float(values["__BLUE_LEVEL_SLIDER__"])
 
-        if event == "__GAIN ADJUST_SLIDER__":
-            if(values["__GAIN ADJUST_SLIDER__"]!=correct.gain_ajust):
-                correct.gain_ajust = float(values["__GAIN ADJUST_SLIDER__"])
+
+        if event == "__SATURATION_CB__":
+            if (values["__SATURATION_CB__"] == True):
+                window["__SATURATION_SLIDER__"].update(disabled=False)
+            else:
+                window["__SATURATION_SLIDER__"].update(disabled=True)
+        if event == "__SATURATION_SLIDER__":
+            if(values["__SATURATION_SLIDER__"]!=correct.sat_level):
+                correct.sat_level = float(values["__SATURATION_SLIDER__"])
+
+
+
+        if event == "__COLOR_BALANCE_CB__":
+            if (values["__COLOR_BALANCE_CB__"] == True):
+                window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+            else:
+                window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
+        if event == "__COLOR_BALANCE_SLIDER__":
+            if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
+                correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
 
 
         if event == "__TEMP_FOLDER_CB__":
@@ -374,7 +406,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 16
+                    listbox_hight_rows = 13
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)

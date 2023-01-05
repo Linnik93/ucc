@@ -24,8 +24,14 @@ MAX_HUE_SHIFT = 120
 
 BLUE_MAGIC_VALUE = 1.2
 
-#90 - max,0 -min
+#0-min,2 -man
 gain_ajust = 0.8
+
+#saturation level
+sat_level = 1.1
+
+# color balance
+cb_level = 1
 
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
@@ -207,7 +213,7 @@ def correct(mat):
     corrected_mat = apply_filter(original_mat, filter_matrix)
     corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
     # color balance for final image
-    corrected_mat = balance_colors(corrected_mat, 1)
+    corrected_mat = balance_colors(corrected_mat, cb_level)
     #else:
         #corrected_mat=cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
 
@@ -221,9 +227,11 @@ def correct(mat):
     #Get array of image
     pil_image = Image.fromarray(opencv_img)
     # change saturation
-    new_img = adjust_saturation(pil_image, 1.1)
+    new_img = adjust_saturation(pil_image, sat_level)
     cv2_img = np.array(new_img)
     corrected_mat=cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
+
+
 
     #filter2 = ImageEnhance.Brightness(pil_image)
     #new_img = adjust_brightness(pil_image, 1.5)
@@ -376,13 +384,14 @@ def process_video(video_data, yield_preview=False):
         interpolated_filter_matrix = get_interpolated_filter_matrix(count)
         corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-        corrected_mat = balance_colors(corrected_mat, 1)
+        corrected_mat = balance_colors(corrected_mat, cb_level)
 
+        # saturation
         opencv_img = cv2.cvtColor(corrected_mat, cv2.COLOR_BGR2RGB)
         # Get array of image
         pil_image = Image.fromarray(opencv_img)
         # change saturation
-        new_img = adjust_saturation(pil_image, 1.1)
+        new_img = adjust_saturation(pil_image, sat_level)
         cv2_img = np.array(new_img)
         corrected_mat = cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 
@@ -488,26 +497,22 @@ def copy_audio(inputVideoPath, outputVideoPath,temp_video_path):
 
     try:
         # remove audio file from temp dir
-        #if(os.path.isfile(audio_path)):
-        os.remove(audio_path)
+        if(os.path.isfile(audio_path)):
+            os.remove(audio_path)
     except:
         print("Error with access to file. Can't delete file: " + audio_path)
 
     try:
-        #print("temp_video_path ", temp_video_path)
         # remove init video file from temp dir
-        #if (os.path.isfile(temp_video_path)):
-        os.remove(temp_video_path)
-
-
+        if (os.path.isfile(temp_video_path)):
+            os.remove(temp_video_path)
     except:
         print("Error with access to file. Can't delete file: " + temp_video_path)
 
     try:
         # replace final video from temp
-        #if (os.path.isfile(soundedVideoPath)):
-        os.replace(soundedVideoPath, outputVideoPath)
-
+        if (os.path.isfile(soundedVideoPath)):
+            shutil.move(soundedVideoPath, outputVideoPath)
     except:
         print("Error with access to file. Can't move file " + soundedVideoPath + " to " + outputVideoPath)
 
