@@ -31,7 +31,7 @@ left_column = [
     ],
     [
         sg.CBox(text="Manual gain adjust ", key = "__GAIN_ADJUST_CB__", enable_events=True),
-        sg.Slider(range=(0.0, 90.0), default_value=18, resolution=.01, size=(32.7, 10), orientation='h', font=('Arial', 10), key="__GAIN ADJUST_SLIDER__", disabled=True, enable_events=True),
+        sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(32.7, 10), orientation='h', font=('Arial', 10), key="__GAIN ADJUST_SLIDER__", disabled=True, enable_events=True),
     ],
     [
         sg.Text(text="",font=('Arial', 5))
