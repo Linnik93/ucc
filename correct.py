@@ -18,7 +18,7 @@ from CustomLogger import video_proc_logger, audio_proc_logger
 
 ###############  underwater color correction #####################################
 
-THRESHOLD_RATIO = 4000
+THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 
@@ -28,7 +28,7 @@ BLUE_MAGIC_VALUE = 1.2
 gain_ajust = 0.8
 
 #saturation level
-sat_level = 1.1
+sat_level = 1.0
 
 # color balance
 cb_level = 1
@@ -140,25 +140,15 @@ def get_filter_matrix(mat):
 
     shifted_r, shifted_g, shifted_b = shifted[0][0]
 
-    # print("- shifted_r",shifted_r)
-    # print("- shifted_g", shifted_g)
-    # print("- shifted_b", shifted_b)
-
     red_gain = (256 / (adjust_r_high - adjust_r_low))
     green_gain = (256 / (adjust_g_high - adjust_g_low))
     blue_gain = (256 / (adjust_b_high - adjust_b_low))
 
-    # print("*** red_gain", red_gain)
-    # print("*** green_gain", green_gain)
-    # print("*** blue_gain", blue_gain)
 
     redOffset = -adjust_r_low / 256 * red_gain
     greenOffset = -adjust_g_low / 256 * green_gain
     blueOffset = -adjust_b_low / 256 * blue_gain
 
-    # print("**** redOffset", redOffset)
-    # print("**** greenOffset", greenOffset)
-    # print("**** blueOffset", blueOffset)
 
     adjust_red = shifted_r * red_gain
     #  print("### adjust_red: ",adjust_red)
