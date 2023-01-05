@@ -182,9 +182,14 @@ def cv2_enhance_contrast(img, factor):
     return cv2.addWeighted(img, factor, img_deg, 1-factor, 0.0)
 
 def adjust_saturation(img, saturation_factor):
-    enhancer = ImageEnhance.Color(img)
+    # saturation
+    opencv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # Get array of image
+    pil_image = Image.fromarray(opencv_img)
+    enhancer = ImageEnhance.Color(pil_image)
     img = enhancer.enhance(saturation_factor)
-    return img
+    cv2_img = np.array(img)
+    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 
 def adjust_brightness(img, brightness_factor):
     enhancer = ImageEnhance.Brightness(img)
@@ -196,39 +201,11 @@ def adjust_brightness(img, brightness_factor):
 
 def correct(mat):
     original_mat = mat.copy()
-    #filter_matrix = get_filter_matrix(mat)
-    #corrected_mat = apply_filter(original_mat, filter_matrix)
-    #if(gain_ajust!=0):
     filter_matrix = get_filter_matrix(mat)
     corrected_mat = apply_filter(original_mat, filter_matrix)
     corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-    # color balance for final image
     corrected_mat = balance_colors(corrected_mat, cb_level)
-    #else:
-        #corrected_mat=cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
-
-    #corrected_mat = white_balance(corrected_mat, 1.1)
-
-
-############################################################
-    # change saturation level
-    # Convert BGR to RGB
-    opencv_img = cv2.cvtColor(corrected_mat, cv2.COLOR_BGR2RGB)
-    #Get array of image
-    pil_image = Image.fromarray(opencv_img)
-    # change saturation
-    new_img = adjust_saturation(pil_image, sat_level)
-    cv2_img = np.array(new_img)
-    corrected_mat=cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
-
-
-
-    #filter2 = ImageEnhance.Brightness(pil_image)
-    #new_img = adjust_brightness(pil_image, 1.5)
-    #new_img = adjust_saturation(new_img,1.5)
-
-    #new_img.show()
-###############################################################
+    corrected_mat=adjust_saturation(corrected_mat, sat_level)
     return corrected_mat
 
 
@@ -375,17 +352,7 @@ def process_video(video_data, yield_preview=False):
         corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
         corrected_mat = balance_colors(corrected_mat, cb_level)
-
-        # saturation
-        opencv_img = cv2.cvtColor(corrected_mat, cv2.COLOR_BGR2RGB)
-        # Get array of image
-        pil_image = Image.fromarray(opencv_img)
-        # change saturation
-        new_img = adjust_saturation(pil_image, sat_level)
-        cv2_img = np.array(new_img)
-        corrected_mat = cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
-
-
+        corrected_mat = adjust_saturation(corrected_mat, sat_level)
         new_video.write(corrected_mat)
 
         if yield_preview:
