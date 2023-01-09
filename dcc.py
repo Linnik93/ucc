@@ -380,11 +380,26 @@ if __name__ == "__main__":
 
             window["__STATUS__"].update("Cancelled")
 
+            window["__COLOR_BALANCE_CB__"].update(disabled=False)
+            window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+            window["__SATURATION_CB__"].update(disabled=False)
+            window["__SATURATION_SLIDER__"].update(disabled=False)
+            window["__BLUE_LEVEL_CB__"].update(disabled=False)
+            window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+
+
         if event == "__CLEAR_LIST__":
             window["__INPUT_FILE_LIST__"].update(values=[])
             window["__STATUS__"].update("")
             window.Element('__VIDEO_VIEWER__').Update(visible=False)
             window.Element('__PHOTO_VIEWER__').Update(visible=False)
+
+            window["__COLOR_BALANCE_CB__"].update(disabled=False)
+            window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+            window["__SATURATION_CB__"].update(disabled=False)
+            window["__SATURATION_SLIDER__"].update(disabled=False)
+            window["__BLUE_LEVEL_CB__"].update(disabled=False)
+            window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
 
 
