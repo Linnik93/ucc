@@ -33,17 +33,19 @@ left_column = [
         sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
         sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
     ],
-    [
-        sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
-        sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h',
-                  font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True),
-    ],
 
     [
         sg.CBox(text="Manual color balance    ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
         sg.Slider(range=(0.0, 10), default_value=1, resolution=.1, size=(32.8, 10), orientation='h',
                   font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
     ],
+    [
+        sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
+        sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True),
+    ],
+
+
 
     [
         sg.Text(text="",font=('Arial', 5))

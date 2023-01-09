@@ -87,6 +87,7 @@ def apply_filter(mat, filt):
 
 
 def get_filter_matrix(mat):
+    global BLUE_MAGIC_VALUE
     # print('called get_filter_matrix')
     mat = cv2.resize(mat, (256, 256))
 
@@ -156,6 +157,7 @@ def get_filter_matrix(mat):
     #  print("### adjust_red_green: ", adjust_red_green)
     BLUE_MAGIC_VALUE=2-gain_ajust
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
+
     #  print("### adjust_red_blue: ",adjust_red_blue)
 
     return np.array([
@@ -200,12 +202,20 @@ def adjust_brightness(img, brightness_factor):
 ###########################################################################
 
 def correct(mat):
+    global gain_ajust,cb_level,sat_level
     original_mat = mat.copy()
-    filter_matrix = get_filter_matrix(mat)
-    corrected_mat = apply_filter(original_mat, filter_matrix)
-    corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-    corrected_mat = balance_colors(corrected_mat, cb_level)
-    corrected_mat=adjust_saturation(corrected_mat, sat_level)
+
+    if(gain_ajust!=0):
+        filter_matrix = get_filter_matrix(mat)
+        corrected_mat = apply_filter(original_mat, filter_matrix)
+        corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+
+    else:
+        corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
+    if(cb_level!=0):
+        corrected_mat = balance_colors(corrected_mat, cb_level)
+    corrected_mat = adjust_saturation(corrected_mat, sat_level)
+
     return corrected_mat
 
 
@@ -293,7 +303,7 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
-
+    global gain_ajust, cb_level, sat_level
 
     # create colored video path
     video_path_split = video_data["output_video_path"].split("/")
@@ -348,10 +358,16 @@ def process_video(video_data, yield_preview=False):
 
         # Apply the filter
         rgb_mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        interpolated_filter_matrix = get_interpolated_filter_matrix(count)
-        corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
-        corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-        corrected_mat = balance_colors(corrected_mat, cb_level)
+        if (gain_ajust != 0):
+            interpolated_filter_matrix = get_interpolated_filter_matrix(count)
+            corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
+            corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+        else:
+            corrected_mat = cv2.cvtColor(rgb_mat, cv2.COLOR_RGB2BGR)
+
+        if(cb_level!=0):
+            corrected_mat = balance_colors(corrected_mat, cb_level)
+
         corrected_mat = adjust_saturation(corrected_mat, sat_level)
         new_video.write(corrected_mat)
 
