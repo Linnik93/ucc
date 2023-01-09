@@ -24,10 +24,16 @@ left_column = [
         sg.FilesBrowse(button_text="Select photos and videos", enable_events=True, key='__INPUT_FILES__', size=(52, 1),button_color='sandybrown')
     ],
     [
-        sg.Text(text="",font=('Arial', 5))
+        sg.CBox(text="Enable preview", key = "__PREVIEW_CB__", enable_events=True,font=('Arial', 10),default=True),
+        sg.Text(text="                      ",font=('Arial', 10)),
+        sg.Text(text="Show video frame from second: ",font=('Arial', 10)),
+        sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 13), key="__INPUT_FILE_LIST__",select_mode='multiple',)
+        sg.Listbox(values=[], enable_events=True, size=(51, 9), key="__INPUT_FILE_LIST__",select_mode='multiple',)
+    ],
+    [
+        sg.Text(text="", font=('Arial', 5))
     ],
     [
         sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
@@ -41,11 +47,14 @@ left_column = [
     ],
     [
         sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
-        sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h',
-                  font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True),
+        sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
     ],
-
-
+    [
+        sg.Text(text="", font=('Arial', 5))
+    ],
+    [
+        sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 0), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (52,1))
+    ],
 
     [
         sg.Text(text="",font=('Arial', 5))
@@ -202,10 +211,60 @@ if __name__ == "__main__":
         if event == sg.WIN_CLOSED:
             break
 
+        if event == "__PREVIEW_CB__":
+            if (values["__PREVIEW_CB__"] == True):
+                window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+            else:
+                window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
+
         #if event == "Window_Event":
 
             #window["__OUTPUT_FOLDER_CB__"].visible()
             #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
+
+        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"):
+            if(values["__PREVIEW_CB__"] == True):
+                #clear list
+                #window["__INPUT_FILE_LIST__"].update([])
+                window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
+                #sel_list_indexes = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
+                #print("index: ", sel_list_indexes)
+
+                #sel_list_pathes=values["__INPUT_FILE_LIST__"]
+                selected_item_path = values["__INPUT_FILE_LIST__"][0]
+                #print("EVENT FILE LIST",sel_list_pathes)
+#####################################################################
+                preview = None
+                preview_before = None
+                preview_after = None
+
+                extension = str(selected_item_path)[str(selected_item_path).rfind("."):].lower()
+
+                filename = os.path.basename(str(selected_item_path))
+
+                if extension in IMAGE_TYPES:
+                    preview = correct_image(str(selected_item_path),None,None)
+                if extension in VIDEO_TYPES:
+                    preview_second = int(values["__PREVIEW_FRAME_SECOND__"])
+                    preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
+                preview_before = preview[0]
+                preview_after = preview[1]
+
+                window["__PHOTO_NAME__"].update("Preprocessing of file: "+filename)
+
+                window["__PREVIEW_BEFORE__"](data=preview_before)
+                window["__PREVIEW_AFTER__"](data=preview_after)
+
+                window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                window.Element('__PHOTO_VIEWER__').Update(visible=True)
+                window.Refresh()
+            else:
+                window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                window.Element('__PHOTO_VIEWER__').Update(visible=False)
+#####################################################################
+                #window["__INPUT_FILE_LIST__"].update(se)
+                #window["__INPUT_FILE_LIST__"].update(set_to_index=len(sel_list)-1)
+                #sg.Popup('Selected ', values["__INPUT_FILE_LIST__"])
 
         if event == "__INPUT_FILES__":
 
@@ -283,11 +342,26 @@ if __name__ == "__main__":
             window["__OUTPUT_FOLDER__"].update(values["__OUTPUT_FOLDER__"])
 
         if event == "__CORRECT__":
+            #window["__INPUT_FILE_LIST__"].update(select_mode='multiple')
             filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
             file_generator = get_files(filepaths)
             window["__CORRECT__"].update(disabled=True)
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=True)
+
+            #window["__INPUT_FILE_LIST__"].update(disabled=True)
+            window["__PREVIEW_CB__"].update(disabled=True)
+            window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
+            window["__REFRESH_PREVIEW__"].update(disabled=True)
+
+            window["__COLOR_BALANCE_CB__"].update(disabled=True)
+            window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
+            window["__SATURATION_CB__"].update(disabled=True)
+            window["__SATURATION_SLIDER__"].update(disabled=True)
+            window["__BLUE_LEVEL_CB__"].update(disabled=True)
+            window["__BLUE_LEVEL_SLIDER__"].update(disabled=True)
+
+
 
 
         if event == "__CANCEL__":
@@ -299,6 +373,11 @@ if __name__ == "__main__":
             analyze_video_generator = None
             process_video_generator = None
 
+            #window["__INPUT_FILE_LIST__"].update(disabled=False)
+            window["__PREVIEW_CB__"].update(disabled=False)
+            window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+            window["__REFRESH_PREVIEW__"].update(disabled=False)
+
             window["__STATUS__"].update("Cancelled")
 
         if event == "__CLEAR_LIST__":
@@ -306,6 +385,8 @@ if __name__ == "__main__":
             window["__STATUS__"].update("")
             window.Element('__VIDEO_VIEWER__').Update(visible=False)
             window.Element('__PHOTO_VIEWER__').Update(visible=False)
+
+
 
         if analyze_video_generator:
             try:
@@ -362,7 +443,7 @@ if __name__ == "__main__":
                     percent=100
                 window["__PROGBAR_PERCENTS__"].update(str(round(percent)) + "%")
                 window["__PROGBAR__"].UpdateBar(round(percent))
-                window["__VIDEO_NAME__"].update(current_in_filename)
+                window["__VIDEO_NAME__"].update("Processing of file: "+current_in_filename)
 
 
             except StopIteration:
@@ -408,7 +489,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 13
+                    listbox_hight_rows = 9
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
@@ -416,7 +497,7 @@ if __name__ == "__main__":
                     current_in_filename=os.path.basename(f)
 
                     if(values["__OUTPUT_PREFIX_CB__"] == True):
-                        new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
+                       new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)
                     else:
                        new_filename=os.path.basename(f)
 
@@ -435,12 +516,12 @@ if __name__ == "__main__":
                         preview_before = None
                         preview_after = None
 
-                        preview = correct_image(f, output_filepath)
+                        preview = correct_image(f, output_filepath,None)
 
                         preview_before = preview[0]
                         preview_after = preview[1]
 
-                        window["__PHOTO_NAME__"].update(current_in_filename)
+                        window["__PHOTO_NAME__"].update("Processing of file: "+current_in_filename)
 
                         window["__PREVIEW_BEFORE__"](data=preview_before)
                         window["__PREVIEW_AFTER__"](data=preview_after)
@@ -450,6 +531,7 @@ if __name__ == "__main__":
                         window.Refresh()
 
                     if extension in VIDEO_TYPES:
+
                         window["__STATUS__"].update("Analyzing")
                         analyze_video_generator = analyze_video(f, output_filepath)
 
@@ -464,10 +546,27 @@ if __name__ == "__main__":
                 analyze_video_generator = None
                 process_video_generator = None
 
+                #window["__INPUT_FILE_LIST__"].update(disabled=False)
+                window["__PREVIEW_CB__"].update(disabled=False)
+                window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+                window["__REFRESH_PREVIEW__"].update(disabled=False)
+
+                window["__COLOR_BALANCE_CB__"].update(disabled=False)
+                window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+                window["__SATURATION_CB__"].update(disabled=False)
+                window["__SATURATION_SLIDER__"].update(disabled=False)
+                window["__BLUE_LEVEL_CB__"].update(disabled=False)
+                window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+
             except:
                 window["__STATUS__"].update("Error in accessing file")
                 window["__CORRECT__"].update(disabled=False)
                 window["__CLEAR_LIST__"].update(disabled=False)
+
+                #window["__INPUT_FILE_LIST__"].update(disabled=False)
+                window["__PREVIEW_CB__"].update(disabled=False)
+                window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+                window["__REFRESH_PREVIEW__"].update(disabled=False)
 
                 file_generator = None
                 file_index = 0

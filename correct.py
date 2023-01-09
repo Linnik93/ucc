@@ -212,6 +212,7 @@ def correct(mat):
 
     else:
         corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
+
     if(cb_level!=0):
         corrected_mat = balance_colors(corrected_mat, cb_level)
     corrected_mat = adjust_saturation(corrected_mat, sat_level)
@@ -219,15 +220,23 @@ def correct(mat):
     return corrected_mat
 
 
-def correct_image(input_path, output_path):
-    mat = cv2.imread(input_path)
-    rgb_mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
+def correct_image(input_path, output_path,image):
+    if(input_path!=None):
+        mat = cv2.imread(input_path)
+        rgb_mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
+        corrected_mat = correct(rgb_mat)
+        preview_bfr = mat.copy()
+    else:
+        rgb_mat = image
+        rgb_mat = cv2.cvtColor(rgb_mat, cv2.COLOR_RGB2BGR)
+        corrected_mat = correct(rgb_mat)
+        preview_bfr = image.copy()
 
-    corrected_mat = correct(rgb_mat)
+    if(output_path!=None):
+        cv2.imwrite(output_path, corrected_mat)
 
-    cv2.imwrite(output_path, corrected_mat)
 
-    preview_bfr = mat.copy()
+    #preview_bfr = mat.copy()
     #width = preview.shape[1] // 2
     #preview[::, width:] = corrected_mat[::, width:]
     preview_ftr= corrected_mat
@@ -404,6 +413,13 @@ def apply_threshold(matrix, low_value, high_value):
 
     return matrix
 
+def get_video_frame(filename,sec):
+    video = cv2.VideoCapture(filename)
+    fps = video.get(cv2.CAP_PROP_FPS)
+    frame_id = int(fps * (sec))
+    video.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+    ret, frame = video.read()
+    return frame
 
 def balance_colors(img, percent):
     out_channels = []
