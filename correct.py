@@ -24,9 +24,12 @@ MAX_HUE_SHIFT = 120
 
 BLUE_MAGIC_VALUE = 1.2
 GREEN_MAGIC_VALUE = 1.2
+
 #0-min,2 -man
 blue_level = 0.8
 green_level = 1
+
+gamma_level = 0
 
 #saturation level
 sat_level = 1.0
@@ -148,15 +151,15 @@ def get_filter_matrix(mat):
     blue_gain = (256 / (adjust_b_high - adjust_b_low))
 
 
-    redOffset = -adjust_r_low / 256 * red_gain
-    greenOffset = -adjust_g_low / 256 * green_gain
-    blueOffset = -adjust_b_low / 256 * blue_gain
+    redOffset = (-adjust_r_low / 256) * red_gain
+    greenOffset = (-adjust_g_low / 256) * green_gain
+    blueOffset = (-adjust_b_low / 256) * blue_gain
 
 
     adjust_red = shifted_r * red_gain
     #  print("### adjust_red: ",adjust_red)
     GREEN_MAGIC_VALUE = 2 - green_level
-    adjust_red_green = shifted_g * red_gain*GREEN_MAGIC_VALUE
+    adjust_red_green = shifted_g * red_gain * GREEN_MAGIC_VALUE
     #  print("### adjust_red_green: ", adjust_red_green)
     BLUE_MAGIC_VALUE=2-blue_level
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
@@ -201,11 +204,20 @@ def adjust_brightness(img, brightness_factor):
     img = enhancer.enhance(brightness_factor)
     return img
 
+def adjust_gamma(image, gamma=1.0):
+	# build a lookup table mapping the pixel values [0, 255] to
+	# their adjusted gamma values
+	invGamma = 1.0 / gamma
+	table = np.array([((i / 255.0) ** invGamma) * 255
+		for i in np.arange(0, 256)]).astype("uint8")
+	# apply gamma correction using the lookup table
+	return cv2.LUT(image, table)
+
 
 ###########################################################################
 
 def correct(mat):
-    global blue_level,cb_level,sat_level,denoising_level
+    global blue_level,cb_level,sat_level,denoising_level,gamma_level
     original_mat = mat.copy()
 
     if(blue_level != 0 and green_level != 0):
@@ -218,8 +230,17 @@ def correct(mat):
 
     if(cb_level!=0):
         corrected_mat = balance_colors(corrected_mat, cb_level)
+    if(gamma_level!=0):
+        corrected_mat = adjust_gamma(corrected_mat, gamma_level)
     if(denoising_level!=0):
         corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+######################################
+    #alpha = 1 # Contrast control (1.0-3.0)
+    #beta = 10 # Brightness control (0-100)
+    #corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
+
+######################################
+
     corrected_mat = adjust_saturation(corrected_mat, sat_level)
 
     return corrected_mat
@@ -317,7 +338,7 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
-    global blue_level, cb_level, sat_level
+    global blue_level, cb_level, sat_level,denoising_level,gamma_level
 
     # create colored video path
     video_path_split = video_data["output_video_path"].split("/")
@@ -381,6 +402,9 @@ def process_video(video_data, yield_preview=False):
 
         if(cb_level!=0):
             corrected_mat = balance_colors(corrected_mat, cb_level)
+
+        if (gamma_level != 0):
+            corrected_mat = adjust_gamma(corrected_mat, gamma_level)
 
         if (denoising_level != 0):
             corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)

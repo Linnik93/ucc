@@ -30,7 +30,7 @@ left_column = [
         sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(66, 7), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        sg.Listbox(values=[], enable_events=True, size=(66, 6), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -53,6 +53,11 @@ left_column = [
     [
         sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
         sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
+        sg.CBox(text="Manual gamma level  ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__GAMMA_SLIDER__", disabled=True, enable_events=True)
     ],
     [
         sg.CBox(text="Manual denoising level  ", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
@@ -154,7 +159,7 @@ video_viewer = [
 
 photo_viewer = [
     [
-        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True)
+        sg.Text(text="", size=(45, 1), font=('Arial', 12), key="__PHOTO_NAME__", justification='center',visible=True)
     ],
     [
         sg.Text(text="Initial Image:", size=(42, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left')
@@ -326,6 +331,15 @@ if __name__ == "__main__":
         if event == "__SATURATION_SLIDER__":
             if(values["__SATURATION_SLIDER__"]!=correct.sat_level):
                 correct.sat_level = float(values["__SATURATION_SLIDER__"])
+
+        if event == "__GAMMA_CB__":
+            if (values["__GAMMA_CB__"] == True):
+                window["__GAMMA_SLIDER__"].update(disabled=False)
+            else:
+                window["__GAMMA_SLIDER__"].update(disabled=True)
+        if event == "__GAMMA_SLIDER__":
+            if(values["__GAMMA_SLIDER__"]!=correct.gamma_level):
+                correct.gamma_level = float(values["__GAMMA_SLIDER__"])
 
         if event == "__DENOISING_CB__":
             if (values["__DENOISING_CB__"] == True):
@@ -531,7 +545,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 7
+                    listbox_hight_rows = 6
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
