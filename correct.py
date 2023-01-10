@@ -32,6 +32,7 @@ sat_level = 1.0
 
 # color balance
 cb_level = 1
+denoising_level = 0
 
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
@@ -202,7 +203,7 @@ def adjust_brightness(img, brightness_factor):
 ###########################################################################
 
 def correct(mat):
-    global gain_ajust,cb_level,sat_level
+    global gain_ajust,cb_level,sat_level,denoising_level
     original_mat = mat.copy()
 
     if(gain_ajust!=0):
@@ -215,6 +216,8 @@ def correct(mat):
 
     if(cb_level!=0):
         corrected_mat = balance_colors(corrected_mat, cb_level)
+    if(denoising_level!=0):
+        corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
     corrected_mat = adjust_saturation(corrected_mat, sat_level)
 
     return corrected_mat
@@ -376,6 +379,9 @@ def process_video(video_data, yield_preview=False):
 
         if(cb_level!=0):
             corrected_mat = balance_colors(corrected_mat, cb_level)
+
+        if (denoising_level != 0):
+            corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
 
         corrected_mat = adjust_saturation(corrected_mat, sat_level)
         new_video.write(corrected_mat)
