@@ -55,7 +55,7 @@ left_column = [
         sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
     ],
     [
-        sg.CBox(text="Manual gamma level  ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
+        sg.CBox(text="Manual gamma level     ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
         sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(32.8, 10), orientation='h',
                   font=('Arial', 10), key="__GAMMA_SLIDER__", disabled=True, enable_events=True)
     ],
