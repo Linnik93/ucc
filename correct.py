@@ -26,7 +26,7 @@ BLUE_MAGIC_VALUE = 1.2
 GREEN_MAGIC_VALUE = 1.2
 
 #0-min,2 -man
-blue_level = 0.8
+blue_level = 1
 green_level = 1
 
 gamma_level = 0

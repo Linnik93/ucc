@@ -30,10 +30,15 @@ left_column = [
         sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(66, 6), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        sg.Listbox(values=[], enable_events=True, size=(66, 5), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
     ],
     [
         sg.Text(text="", font=('Arial', 5))
+    ],
+    [
+        sg.CBox(text="Manual colors level       ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
     ],
     [
         sg.CBox(text="Manual green level        ", key="__GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
@@ -42,14 +47,10 @@ left_column = [
     ],
     [
         sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
-        sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
+        sg.Slider(range=(0.0, 2), default_value=1, resolution=.01, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
     ],
 
-    [
-        sg.CBox(text="Manual color balance    ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0.0, 10), default_value=1, resolution=.1, size=(32.8, 10), orientation='h',
-                  font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
-    ],
+
     [
         sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
         sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
@@ -359,6 +360,10 @@ if __name__ == "__main__":
         if event == "__COLOR_BALANCE_SLIDER__":
             if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
                 correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
+        if event == "__COLOR_BALANCE_SLIDER__":
+            if ((values["__GREEN_LEVEL_CB__"] == False) and (values["__BLUE_LEVEL_CB__"] == False)):
+                window["__GREEN_LEVEL_SLIDER__"].update(value=2-values["__COLOR_BALANCE_SLIDER__"])
+                window["__BLUE_LEVEL_SLIDER__"].update(value=2 - values["__COLOR_BALANCE_SLIDER__"])
 
 
         if event == "__TEMP_FOLDER_CB__":
@@ -545,7 +550,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 6
+                    listbox_hight_rows = 5
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
