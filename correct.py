@@ -25,7 +25,7 @@ MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1.2
 GREEN_MAGIC_VALUE = 1.2
 #0-min,2 -man
-gain_ajust = 0.8
+blue_level = 0.8
 green_level = 1
 
 #saturation level
@@ -158,7 +158,7 @@ def get_filter_matrix(mat):
     GREEN_MAGIC_VALUE = 2 - green_level
     adjust_red_green = shifted_g * red_gain*GREEN_MAGIC_VALUE
     #  print("### adjust_red_green: ", adjust_red_green)
-    BLUE_MAGIC_VALUE=2-gain_ajust
+    BLUE_MAGIC_VALUE=2-blue_level
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
 
     #  print("### adjust_red_blue: ",adjust_red_blue)
@@ -205,10 +205,10 @@ def adjust_brightness(img, brightness_factor):
 ###########################################################################
 
 def correct(mat):
-    global gain_ajust,cb_level,sat_level,denoising_level
+    global blue_level,cb_level,sat_level,denoising_level
     original_mat = mat.copy()
 
-    if(gain_ajust!=0):
+    if(blue_level != 0 and green_level != 0):
         filter_matrix = get_filter_matrix(mat)
         corrected_mat = apply_filter(original_mat, filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
@@ -317,7 +317,7 @@ def analyze_video(input_video_path, output_video_path):
 
 
 def process_video(video_data, yield_preview=False):
-    global gain_ajust, cb_level, sat_level
+    global blue_level, cb_level, sat_level
 
     # create colored video path
     video_path_split = video_data["output_video_path"].split("/")
@@ -372,7 +372,7 @@ def process_video(video_data, yield_preview=False):
 
         # Apply the filter
         rgb_mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        if (gain_ajust != 0):
+        if (blue_level != 0 and green_level != 0):
             interpolated_filter_matrix = get_interpolated_filter_matrix(count)
             corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
             corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
