@@ -30,10 +30,15 @@ left_column = [
         sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(51, 7), key="__INPUT_FILE_LIST__",select_mode='multiple',)
+        sg.Listbox(values=[], enable_events=True, size=(51, 5), key="__INPUT_FILE_LIST__",select_mode='multiple',)
     ],
     [
         sg.Text(text="", font=('Arial', 5))
+    ],
+    [
+        sg.CBox(text="Manual green level         ", key="__GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0.0, 2), default_value=1, resolution=.01, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__GREEN_LEVEL_SLIDER__", disabled=True, enable_events=True),
     ],
     [
         sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
@@ -303,6 +308,15 @@ if __name__ == "__main__":
             if(values["__BLUE_LEVEL_SLIDER__"]!=correct.gain_ajust):
                 correct.gain_ajust = float(values["__BLUE_LEVEL_SLIDER__"])
 
+        if event == "__GREEN_LEVEL_CB__":
+            if (values["__GREEN_LEVEL_CB__"] == True):
+                window["__GREEN_LEVEL_SLIDER__"].update(disabled=False)
+            else:
+                window["__GREEN_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__GREEN_LEVEL_SLIDER__":
+            if(values["__GREEN_LEVEL_SLIDER__"]!=correct.green_level):
+                correct.green_level = float(values["__GREEN_LEVEL_SLIDER__"])
+
 
         if event == "__SATURATION_CB__":
             if (values["__SATURATION_CB__"] == True):
@@ -517,7 +531,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 7
+                    listbox_hight_rows = 5
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)

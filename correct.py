@@ -23,9 +23,10 @@ MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 
 BLUE_MAGIC_VALUE = 1.2
-
+GREEN_MAGIC_VALUE = 1.2
 #0-min,2 -man
 gain_ajust = 0.8
+green_level = 1
 
 #saturation level
 sat_level = 1.0
@@ -88,7 +89,7 @@ def apply_filter(mat, filt):
 
 
 def get_filter_matrix(mat):
-    global BLUE_MAGIC_VALUE
+    global BLUE_MAGIC_VALUE,GREEN_MAGIC_VALUE
     # print('called get_filter_matrix')
     mat = cv2.resize(mat, (256, 256))
 
@@ -154,7 +155,8 @@ def get_filter_matrix(mat):
 
     adjust_red = shifted_r * red_gain
     #  print("### adjust_red: ",adjust_red)
-    adjust_red_green = shifted_g * red_gain
+    GREEN_MAGIC_VALUE = 2 - green_level
+    adjust_red_green = shifted_g * red_gain*GREEN_MAGIC_VALUE
     #  print("### adjust_red_green: ", adjust_red_green)
     BLUE_MAGIC_VALUE=2-gain_ajust
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
