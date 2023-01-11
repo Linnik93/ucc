@@ -27,7 +27,7 @@ GREEN_MAGIC_VALUE = 1.2
 
 #0-min,2 -man
 blue_level = 1
-green_level = 1
+
 
 gamma_level = 0
 
@@ -158,8 +158,7 @@ def get_filter_matrix(mat):
 
     adjust_red = shifted_r * red_gain
     #  print("### adjust_red: ",adjust_red)
-    GREEN_MAGIC_VALUE = 2 - green_level
-    adjust_red_green = shifted_g * red_gain * GREEN_MAGIC_VALUE
+    adjust_red_green = shifted_g * red_gain
     #  print("### adjust_red_green: ", adjust_red_green)
     BLUE_MAGIC_VALUE=2-blue_level
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
@@ -220,7 +219,7 @@ def correct(mat):
     global blue_level,cb_level,sat_level,denoising_level,gamma_level
     original_mat = mat.copy()
 
-    if(blue_level != 0 and green_level != 0):
+    if(blue_level != 0):
         filter_matrix = get_filter_matrix(mat)
         corrected_mat = apply_filter(original_mat, filter_matrix)
         corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
@@ -393,7 +392,7 @@ def process_video(video_data, yield_preview=False):
 
         # Apply the filter
         rgb_mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        if (blue_level != 0 and green_level != 0):
+        if (blue_level != 0):
             interpolated_filter_matrix = get_interpolated_filter_matrix(count)
             corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
             corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
