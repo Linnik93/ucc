@@ -17,6 +17,8 @@ sg.theme('SandyBeach')
 sg.set_options(font=("Arial", 13))
 sg.set_global_icon(LOGO)
 
+correction_level = 1
+
 TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
 
 left_column = [
@@ -25,15 +27,22 @@ left_column = [
     ],
     [
         sg.CBox(text="Enable preview", key = "__PREVIEW_CB__", enable_events=True,font=('Arial', 10),default=True),
-        sg.Text(text="                      ",font=('Arial', 10)),
-        sg.Text(text="Show video frame from second: ",font=('Arial', 10)),
+        sg.Text(text="           ",font=('Arial', 10)),
+        sg.Text(text="Show video frame on second: ",font=('Arial', 10)),
         sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
+        sg.Button(button_text=" < ", enable_events=True, pad=(2, 0), button_color='sandybrown', key="__PREVIEW_PREVIOUS_FRAME__",size = (3,1),font=('Arial', 8)),
+        sg.Button(button_text=" > ", enable_events=True, pad=(2, 0), button_color='sandybrown', key="__PREVIEW_NEXT_FRAME__",size = (3,1),font=('Arial', 8)),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(66, 7), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        sg.Listbox(values=[], enable_events=True, size=(66, 5), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
     ],
     [
         sg.Text(text="", font=('Arial', 5))
+    ],
+    [
+        sg.CBox(text="Adjust correction          ", key="__ADJUST_CORRECTION_CB__", enable_events=True, font=('Arial', 10),default=True),
+        sg.Slider(range=(0, 4), default_value=1, resolution=.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__ADJUST_CORRECTION_SLIDER__", disabled=False, enable_events=True),
     ],
     [
         sg.CBox(text="Manual colors level       ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
@@ -257,8 +266,18 @@ if __name__ == "__main__":
                 if extension in IMAGE_TYPES:
                     preview = correct_image(str(selected_item_path),None,None)
                 if extension in VIDEO_TYPES:
-                    preview_second = int(values["__PREVIEW_FRAME_SECOND__"])
-                    preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
+
+                    video_duration=correct.get_video_duration(str(selected_item_path))
+                    preview_second = float(values["__PREVIEW_FRAME_SECOND__"])
+
+                    print("video_duration: ",video_duration)
+                    print("preview_second: ", preview_second)
+
+                    if(int(preview_second)<int(video_duration)):
+                        preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
+                    else:
+                        preview = correct_image(None, None, correct.get_video_frame(str(selected_item_path), round(int(video_duration)-1)))
+
                 preview_before = preview[0]
                 preview_after = preview[1]
 
@@ -277,6 +296,14 @@ if __name__ == "__main__":
                 #window["__INPUT_FILE_LIST__"].update(se)
                 #window["__INPUT_FILE_LIST__"].update(set_to_index=len(sel_list)-1)
                 #sg.Popup('Selected ', values["__INPUT_FILE_LIST__"])
+
+
+        if event == "__PREVIEW_PREVIOUS_FRAME__":
+            if(int(values["__PREVIEW_FRAME_SECOND__"])>1):
+                window["__PREVIEW_FRAME_SECOND__"].update(value=int(values["__PREVIEW_FRAME_SECOND__"])-1)
+
+        if event == "__PREVIEW_NEXT_FRAME__":
+            window["__PREVIEW_FRAME_SECOND__"].update(value=int(values["__PREVIEW_FRAME_SECOND__"])+1)
 
         if event == "__INPUT_FILES__":
 
@@ -307,10 +334,8 @@ if __name__ == "__main__":
             else:
                 window["__BLUE_LEVEL_SLIDER__"].update(disabled=True)
         if event == "__BLUE_LEVEL_SLIDER__":
-            if(values["__BLUE_LEVEL_SLIDER__"]!=correct.blue_level):
-                correct.blue_level = float(values["__BLUE_LEVEL_SLIDER__"])
-
-
+            if(float(values["__BLUE_LEVEL_SLIDER__"])!=correct.blue_level):
+                correct.blue_level = values["__BLUE_LEVEL_SLIDER__"]
 
         if event == "__SATURATION_CB__":
             if (values["__SATURATION_CB__"] == True):
@@ -339,18 +364,39 @@ if __name__ == "__main__":
             if(values["__DENOISING_SLIDER__"]!=correct.denoising_level):
                 correct.denoising_level = float(values["__DENOISING_SLIDER__"])
 
+        if event == "__ADJUST_CORRECTION_CB__":
+            if (values["__ADJUST_CORRECTION_CB__"] == True):
+                window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=False)
+            else:
+                window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=True)
+        if event == "__ADJUST_CORRECTION_SLIDER__":
+            if(values["__ADJUST_CORRECTION_SLIDER__"]!=correction_level):
+                correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
+                if ((values["__BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
+                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1.8):
+                        correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
+                        window["__BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
+
+                    correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
+                    window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
+
+
 
         if event == "__COLOR_BALANCE_CB__":
-            if (values["__COLOR_BALANCE_CB__"] == True):
+            if(values["__COLOR_BALANCE_CB__"] == True):
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             else:
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
         if event == "__COLOR_BALANCE_SLIDER__":
             if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
                 correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
+        """
         if event == "__COLOR_BALANCE_SLIDER__":
             if ( (values["__BLUE_LEVEL_CB__"] == False)):
-                window["__BLUE_LEVEL_SLIDER__"].update(value=2 - values["__COLOR_BALANCE_SLIDER__"])
+                correct.blue_level=2 - float(values["__COLOR_BALANCE_SLIDER__"])
+                window["__BLUE_LEVEL_SLIDER__"].update(value=(2 - float(values["__COLOR_BALANCE_SLIDER__"])))
+        """
+
 
 
         if event == "__TEMP_FOLDER_CB__":
@@ -537,7 +583,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 7
+                    listbox_hight_rows = 5
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)

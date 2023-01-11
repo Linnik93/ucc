@@ -218,7 +218,8 @@ def adjust_gamma(image, gamma=1.0):
 def correct(mat):
     global blue_level,cb_level,sat_level,denoising_level,gamma_level
     original_mat = mat.copy()
-
+    print("Blue level: ",blue_level)
+    print("Color level: ", cb_level)
     if(blue_level != 0):
         filter_matrix = get_filter_matrix(mat)
         corrected_mat = apply_filter(original_mat, filter_matrix)
@@ -244,7 +245,14 @@ def correct(mat):
 
     return corrected_mat
 
+def get_video_duration(filename):
+    video = cv2.VideoCapture(filename)
+    fps = video.get(cv2.CAP_PROP_FPS)
+    #duration = video.get(cv2.CAP_PROP_POS_MSEC)
+    frame_count = video.get(cv2.CAP_PROP_FRAME_COUNT)
+    duration = round(frame_count/fps)
 
+    return duration
 def correct_image(input_path, output_path,image):
     if(input_path!=None):
         mat = cv2.imread(input_path)
