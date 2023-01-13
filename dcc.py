@@ -17,7 +17,7 @@ sg.theme('SandyBeach')
 sg.set_options(font=("Arial", 13))
 sg.set_global_icon(LOGO)
 
-correction_level = 1
+
 
 TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
 
@@ -34,15 +34,21 @@ left_column = [
         sg.Button(button_text=" > ", enable_events=True, pad=(2, 0), button_color='sandybrown', key="__PREVIEW_NEXT_FRAME__",size = (3,1),font=('Arial', 8)),
     ],
     [
-        sg.Listbox(values=[], enable_events=True, size=(66, 5), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        sg.Listbox(values=[], enable_events=True, size=(66, 3), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
     ],
     [
         sg.Text(text="", font=('Arial', 5))
     ],
     [
         sg.CBox(text="Adjust correction          ", key="__ADJUST_CORRECTION_CB__", enable_events=True, font=('Arial', 10),default=True),
-        sg.Slider(range=(0, 4), default_value=1, resolution=.1, size=(32.8, 10), orientation='h',
+        sg.Slider(range=(0, 2), default_value=1, resolution=0.1, size=(32.8, 10), orientation='h',
                   font=('Arial', 10), key="__ADJUST_CORRECTION_SLIDER__", disabled=False, enable_events=True),
+    ],
+    [
+        sg.CBox(text="White balance              ", key="__WHITE_BALANCE_CB__", enable_events=True,
+                font=('Arial', 10), default=False),
+        sg.Slider(range=(-5, 5), default_value=0, resolution=0.1, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10), key="__WHITE_BALANCE_SLIDER__", disabled=True, enable_events=True),
     ],
     [
         sg.CBox(text="Manual colors level       ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
@@ -270,8 +276,6 @@ if __name__ == "__main__":
                     video_duration=correct.get_video_duration(str(selected_item_path))
                     preview_second = float(values["__PREVIEW_FRAME_SECOND__"])
 
-                    print("video_duration: ",video_duration)
-                    print("preview_second: ", preview_second)
 
                     if(int(preview_second)<int(video_duration)):
                         preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
@@ -364,14 +368,31 @@ if __name__ == "__main__":
             if(values["__DENOISING_SLIDER__"]!=correct.denoising_level):
                 correct.denoising_level = float(values["__DENOISING_SLIDER__"])
 
+
+
+
+        if event == "__WHITE_BALANCE_CB__":
+            if (values["__WHITE_BALANCE_CB__"] == True):
+                window["__WHITE_BALANCE_SLIDER__"].update(disabled=False)
+            else:
+                window["__WHITE_BALANCE_SLIDER__"].update(disabled=True)
+
+        if event == "__WHITE_BALANCE_SLIDER__":
+            if (values["__WHITE_BALANCE_SLIDER__"] != correct.white_balance_level):
+                correct.white_balance_level = float(values["__WHITE_BALANCE_SLIDER__"])
+
+
+
         if event == "__ADJUST_CORRECTION_CB__":
             if (values["__ADJUST_CORRECTION_CB__"] == True):
                 window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=False)
             else:
                 window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=True)
+
         if event == "__ADJUST_CORRECTION_SLIDER__":
-            if(values["__ADJUST_CORRECTION_SLIDER__"]!=correction_level):
-                correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
+            if(values["__ADJUST_CORRECTION_SLIDER__"]!=correct.correction_level):
+                correct.correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
+                """
                 if ((values["__BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
                     if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1.8):
                         correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
@@ -379,7 +400,7 @@ if __name__ == "__main__":
 
                     correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
                     window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
-
+                """
 
 
         if event == "__COLOR_BALANCE_CB__":
@@ -583,7 +604,7 @@ if __name__ == "__main__":
             try:
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
-                    listbox_hight_rows = 5
+                    listbox_hight_rows = 3
                     window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)

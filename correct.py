@@ -22,8 +22,11 @@ THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 
-BLUE_MAGIC_VALUE = 1.2
-GREEN_MAGIC_VALUE = 1.2
+BLUE_MAGIC_VALUE = 1
+
+correction_level = 1
+
+white_balance_level = 0
 
 #0-min,2 -man
 blue_level = 1
@@ -145,11 +148,12 @@ def get_filter_matrix(mat):
     shifted = hue_shift_red(np.array([1, 1, 1]), hue_shift)
 
     shifted_r, shifted_g, shifted_b = shifted[0][0]
+    #################################################################################
 
     red_gain = (256 / (adjust_r_high - adjust_r_low))
     green_gain = (256 / (adjust_g_high - adjust_g_low))
     blue_gain = (256 / (adjust_b_high - adjust_b_low))
-
+    ##################################################################################
 
     redOffset = (-adjust_r_low / 256) * red_gain
     greenOffset = (-adjust_g_low / 256) * green_gain
@@ -160,7 +164,7 @@ def get_filter_matrix(mat):
     #  print("### adjust_red: ",adjust_red)
     adjust_red_green = shifted_g * red_gain
     #  print("### adjust_red_green: ", adjust_red_green)
-    BLUE_MAGIC_VALUE=2-blue_level
+    BLUE_MAGIC_VALUE = 2 - blue_level
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
 
     #  print("### adjust_red_blue: ",adjust_red_blue)
@@ -212,14 +216,47 @@ def adjust_gamma(image, gamma=1.0):
 	# apply gamma correction using the lookup table
 	return cv2.LUT(image, table)
 
+############ Color temperature ##################################
+kelvin_table = {
+    1000: (255,56,0),
+    1500: (255,109,0),
+    2000: (255,137,18),
+    2500: (255,161,72),
+    3000: (255,180,107),
+    3500: (255,196,137),
+    4000: (255,209,163),
+    4500: (255,219,186),
+    5000: (255,228,206),
+    5500: (255,236,224),
+    6000: (255,243,239),
+    6500: (255,249,253),
+    7000: (245,243,255),
+    7500: (235,238,255),
+    8000: (227,233,255),
+    8500: (220,229,255),
+    9000: (214,225,255),
+    9500: (208,222,255),
+    10000: (204,219,255)}
 
+
+def convert_temp(image, temp):
+    r, g, b = kelvin_table[temp]
+    matrix = ( r / 255.0, 0.0, 0.0, 0.0,
+               0.0, g / 255.0, 0.0, 0.0,
+               0.0, 0.0, b / 255.0, 0.0 )
+
+    opencv_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # Get array of image
+    pil_image = Image.fromarray(opencv_img)
+    pil_image = pil_image.convert('RGB', matrix)
+    cv2_img = np.array(pil_image)
+    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 ###########################################################################
 
 def correct(mat):
     global blue_level,cb_level,sat_level,denoising_level,gamma_level
     original_mat = mat.copy()
-    print("Blue level: ",blue_level)
-    print("Color level: ", cb_level)
+
     if(blue_level != 0):
         filter_matrix = get_filter_matrix(mat)
         corrected_mat = apply_filter(original_mat, filter_matrix)
@@ -234,6 +271,11 @@ def correct(mat):
         corrected_mat = adjust_gamma(corrected_mat, gamma_level)
     if(denoising_level!=0):
         corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+
+    if(white_balance_level!=0):
+        corrected_mat=white_balance(corrected_mat, white_balance_level)
+
+    #corrected_mat = convert_temp(corrected_mat,7500)
 ######################################
     #alpha = 1 # Contrast control (1.0-3.0)
     #beta = 10 # Brightness control (0-100)
@@ -415,6 +457,9 @@ def process_video(video_data, yield_preview=False):
 
         if (denoising_level != 0):
             corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+
+        if (white_balance_level != 0):
+            corrected_mat = white_balance(corrected_mat, white_balance_level)
 
         corrected_mat = adjust_saturation(corrected_mat, sat_level)
         new_video.write(corrected_mat)
