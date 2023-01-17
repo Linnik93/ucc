@@ -41,7 +41,7 @@ left_column = [
     ],
     [
         sg.CBox(text="Adjust correction          ", key="__ADJUST_CORRECTION_CB__", enable_events=True, font=('Arial', 10),default=True),
-        sg.Slider(range=(0, 2), default_value=1, resolution=0.1, size=(32.8, 10), orientation='h',
+        sg.Slider(range=(0, 4), default_value=1, resolution=0.1, size=(32.8, 10), orientation='h',
                   font=('Arial', 10), key="__ADJUST_CORRECTION_SLIDER__", disabled=False, enable_events=True),
     ],
     [
@@ -74,6 +74,23 @@ left_column = [
     [
         sg.CBox(text="Manual denoising level  ", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
         sg.Slider(range=(0, 50), default_value=0, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10), key="__DENOISING_SLIDER__", disabled=True, enable_events=True)
+    ],
+
+    [
+        sg.CBox(text="Manual contrast level    ", key="__CONTRAST_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0, 3), default_value=1, resolution=.1, size=(32.8, 10), orientation='h', font=('Arial', 10),
+                  key="__CONTRAST_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
+        sg.CBox(text="Manual brightness level ", key="__BRIGHTNESS_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(32.8, 10), orientation='h', font=('Arial', 10),
+                  key="__BRIGHTNESS_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
+        sg.CBox(text="Manual sharpness level ", key="__SHARPNESS_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(-5, 5), default_value=1.0, resolution=0.01, size=(32.8, 10), orientation='h',
+                  font=('Arial', 10),
+                  key="__SHARPNESS_SLIDER__", disabled=True, enable_events=True)
     ],
     [
         sg.Text(text="", font=('Arial', 5))
@@ -194,9 +211,9 @@ photo_viewer = [
 
 layout = [
     [
-        sg.Column(left_column,size=(490, 650)),
-        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490, 650)),
-        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490,650)),
+        sg.Column(left_column,size=(490, 750)),
+        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490, 750)),
+        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(490,750)),
     ]
 ]
 
@@ -368,7 +385,32 @@ if __name__ == "__main__":
             if(values["__DENOISING_SLIDER__"]!=correct.denoising_level):
                 correct.denoising_level = float(values["__DENOISING_SLIDER__"])
 
+        if event == "__CONTRAST_CB__":
+            if (values["__CONTRAST_CB__"] == True):
+                window["__CONTRAST_SLIDER__"].update(disabled=False)
+            else:
+                window["__CONTRAST_SLIDER__"].update(disabled=True)
+        if event == "__CONTRAST_SLIDER__":
+            if(values["__CONTRAST_SLIDER__"]!=correct.contrast_level):
+                correct.contrast_level = float(values["__CONTRAST_SLIDER__"])
 
+        if event == "__BRIGHTNESS_CB__":
+            if (values["__BRIGHTNESS_CB__"] == True):
+                window["__BRIGHTNESS_SLIDER__"].update(disabled=False)
+            else:
+                window["__BRIGHTNESS_SLIDER__"].update(disabled=True)
+        if event == "__BRIGHTNESS_SLIDER__":
+            if(values["__BRIGHTNESS_SLIDER__"]!=correct.contrast_level):
+                correct.brightness_level = float(values["__BRIGHTNESS_SLIDER__"])
+
+        if event == "__SHARPNESS_CB__":
+            if (values["__SHARPNESS_CB__"] == True):
+                window["__SHARPNESS_SLIDER__"].update(disabled=False)
+            else:
+                window["__SHARPNESS_SLIDER__"].update(disabled=True)
+        if event == "__SHARPNESS_SLIDER__":
+            if(values["__SHARPNESS_SLIDER__"]!=correct.contrast_level):
+                correct.sharpness_level = float(values["__SHARPNESS_SLIDER__"])
 
 
         if event == "__WHITE_BALANCE_CB__":
@@ -392,15 +434,22 @@ if __name__ == "__main__":
         if event == "__ADJUST_CORRECTION_SLIDER__":
             if(values["__ADJUST_CORRECTION_SLIDER__"]!=correct.correction_level):
                 correct.correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
-                """
-                if ((values["__BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
-                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1.8):
-                        correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
-                        window["__BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
 
-                    correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
-                    window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
-                """
+                if ((values["__BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
+                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1):
+
+                        window["__BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
+                        correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
+                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) == 0):
+                        window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
+                        correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
+                    else:
+                        window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"]))+0.2)
+                        correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"]+0.2)
+
+
+
+
 
 
         if event == "__COLOR_BALANCE_CB__":

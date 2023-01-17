@@ -25,14 +25,17 @@ MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1
 
 correction_level = 1
-
+sharpness_level = 1
 white_balance_level = 0
 
 #0-min,2 -man
 blue_level = 1
 
+contrast_level=1
 
 gamma_level = 0
+
+brightness_level=1
 
 #saturation level
 sat_level = 1.0
@@ -203,9 +206,22 @@ def adjust_saturation(img, saturation_factor):
     return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 
 def adjust_brightness(img, brightness_factor):
-    enhancer = ImageEnhance.Brightness(img)
+    opencv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # Get array of image
+    pil_image = Image.fromarray(opencv_img)
+    enhancer = ImageEnhance.Brightness(pil_image)
     img = enhancer.enhance(brightness_factor)
-    return img
+    cv2_img = np.array(img)
+    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
+
+def adjust_sharpness(img, sharpness_factor):
+    opencv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # Get array of image
+    pil_image = Image.fromarray(opencv_img)
+    enhancer = ImageEnhance.Sharpness(pil_image)
+    img = enhancer.enhance(sharpness_factor)
+    cv2_img = np.array(img)
+    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 
 def adjust_gamma(image, gamma=1.0):
 	# build a lookup table mapping the pixel values [0, 255] to
@@ -216,42 +232,7 @@ def adjust_gamma(image, gamma=1.0):
 	# apply gamma correction using the lookup table
 	return cv2.LUT(image, table)
 
-############ Color temperature ##################################
-kelvin_table = {
-    1000: (255,56,0),
-    1500: (255,109,0),
-    2000: (255,137,18),
-    2500: (255,161,72),
-    3000: (255,180,107),
-    3500: (255,196,137),
-    4000: (255,209,163),
-    4500: (255,219,186),
-    5000: (255,228,206),
-    5500: (255,236,224),
-    6000: (255,243,239),
-    6500: (255,249,253),
-    7000: (245,243,255),
-    7500: (235,238,255),
-    8000: (227,233,255),
-    8500: (220,229,255),
-    9000: (214,225,255),
-    9500: (208,222,255),
-    10000: (204,219,255)}
 
-
-def convert_temp(image, temp):
-    r, g, b = kelvin_table[temp]
-    matrix = ( r / 255.0, 0.0, 0.0, 0.0,
-               0.0, g / 255.0, 0.0, 0.0,
-               0.0, 0.0, b / 255.0, 0.0 )
-
-    opencv_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # Get array of image
-    pil_image = Image.fromarray(opencv_img)
-    pil_image = pil_image.convert('RGB', matrix)
-    cv2_img = np.array(pil_image)
-    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
-###########################################################################
 
 def correct(mat):
     global blue_level,cb_level,sat_level,denoising_level,gamma_level
@@ -265,8 +246,10 @@ def correct(mat):
     else:
         corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
 
+
     if(cb_level!=0):
         corrected_mat = balance_colors(corrected_mat, cb_level)
+
     if(gamma_level!=0):
         corrected_mat = adjust_gamma(corrected_mat, gamma_level)
     if(denoising_level!=0):
@@ -274,6 +257,15 @@ def correct(mat):
 
     if(white_balance_level!=0):
         corrected_mat=white_balance(corrected_mat, white_balance_level)
+
+    if(contrast_level!=1):
+        corrected_mat = cv2_enhance_contrast(corrected_mat,contrast_level)
+    if(brightness_level!=1):
+        corrected_mat = adjust_brightness(corrected_mat,brightness_level)
+
+    if(sharpness_level!=1):
+        corrected_mat = adjust_sharpness(corrected_mat,sharpness_level)
+
 
     #corrected_mat = convert_temp(corrected_mat,7500)
 ######################################
@@ -460,6 +452,15 @@ def process_video(video_data, yield_preview=False):
 
         if (white_balance_level != 0):
             corrected_mat = white_balance(corrected_mat, white_balance_level)
+
+        if (contrast_level != 1):
+            corrected_mat = cv2_enhance_contrast(corrected_mat, contrast_level)
+
+        if (brightness_level != 1):
+            corrected_mat = adjust_brightness(corrected_mat, brightness_level)
+
+        if (sharpness_level != 1):
+            corrected_mat = adjust_sharpness(corrected_mat, sharpness_level)
 
         corrected_mat = adjust_saturation(corrected_mat, sat_level)
         new_video.write(corrected_mat)
