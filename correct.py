@@ -24,7 +24,7 @@ MAX_HUE_SHIFT = 120
 
 BLUE_MAGIC_VALUE = 1
 
-correction_level = 1
+
 sharpness_level = 1
 white_balance_level = 0
 
@@ -307,8 +307,8 @@ def correct_image(input_path, output_path,image):
     #width = preview.shape[1] // 2
     #preview[::, width:] = corrected_mat[::, width:]
     preview_ftr= corrected_mat
-    preview_bfr = cv2.resize(preview_bfr, (480, 270))
-    preview_ftr = cv2.resize(preview_ftr, (480, 270))
+    preview_bfr = cv2.resize(preview_bfr, (576,324))
+    preview_ftr = cv2.resize(preview_ftr, (576,324))
     preview_imgs = [cv2.imencode('.png', preview_bfr)[1].tobytes(), cv2.imencode('.png', preview_ftr)[1].tobytes()]
     return preview_imgs
 
@@ -471,7 +471,7 @@ def process_video(video_data, yield_preview=False):
             height = preview.shape[0] // 2
             preview[::, width:] = corrected_mat[::, width:]
 
-            preview = cv2.resize(preview, (480, 270))
+            preview = cv2.resize(preview, (576,324))
 
             yield percent, cv2.imencode('.png', preview)[1].tobytes()
         else:
