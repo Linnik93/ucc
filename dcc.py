@@ -74,6 +74,24 @@ image_settings_section = [
                   key="__SHARPNESS_SLIDER__", disabled=True, enable_events=True)
     ],
     [
+        sg.CBox(text="Manual red level            ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+                  font=('Arial', 10),
+                  key="__ADJ_RED_LEVEL_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
+        sg.CBox(text="Manual green level        ", key="__ADJ_GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+                  font=('Arial', 10),
+                  key="__ADJ_GREEN_LEVEL_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
+        sg.CBox(text="Manual blue level          ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+                  font=('Arial', 10),
+                  key="__ADJ_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True)
+    ],
+    [
         sg.Text(text="", font=('Arial', 5))
     ],
     [
@@ -228,11 +246,6 @@ layout = [
 #window = sg.Window("UCC: Underwater Color Corrector", layout, resizable=True, finalize=True)
 # Fix scalling level
 sg.set_options(scaling=1.333333333)
-
-
-
-
-
 
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
 
@@ -427,7 +440,36 @@ if __name__ == "__main__":
             if(values["__SHARPNESS_SLIDER__"]!=correct.contrast_level):
                 correct.sharpness_level = float(values["__SHARPNESS_SLIDER__"])
 
+########################################
+        if event == "__ADJ_RED_LEVEL_CB__":
+            if (values["__ADJ_RED_LEVEL_CB__"] == True):
+                window["__ADJ_RED_LEVEL_SLIDER__"].update(disabled=False)
+            else:
+                window["__ADJ_RED_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__ADJ_RED_LEVEL_SLIDER__":
+            if (values["__ADJ_RED_LEVEL_SLIDER__"] != correct.adjust_red_level):
+                correct.adjust_red_level = float(values["__ADJ_RED_LEVEL_SLIDER__"])
 
+        if event == "__ADJ_GREEN_LEVEL_CB__":
+            if (values["__ADJ_GREEN_LEVEL_CB__"] == True):
+                window["__ADJ_GREEN_LEVEL_SLIDER__"].update(disabled=False)
+            else:
+                window["__ADJ_GREEN_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__ADJ_GREEN_LEVEL_SLIDER__":
+            if (values["__ADJ_GREEN_LEVEL_SLIDER__"] != correct.adjust_green_level):
+                correct.adjust_green_level = float(values["__ADJ_GREEN_LEVEL_SLIDER__"])
+
+        if event == "__ADJ_BLUE_LEVEL_CB__":
+            if (values["__ADJ_BLUE_LEVEL_CB__"] == True):
+                window["__ADJ_BLUE_LEVEL_SLIDER__"].update(disabled=False)
+            else:
+                window["__ADJ_BLUE_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__ADJ_BLUE_LEVEL_SLIDER__":
+            if (values["__ADJ_BLUE_LEVEL_SLIDER__"] != correct.adjust_blue_level):
+                correct.adjust_blue_level = float(values["__ADJ_BLUE_LEVEL_SLIDER__"])
+
+
+#######################################
         if event == "__WHITE_BALANCE_CB__":
             if (values["__WHITE_BALANCE_CB__"] == True):
                 window["__WHITE_BALANCE_SLIDER__"].update(disabled=False)

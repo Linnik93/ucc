@@ -22,15 +22,16 @@ THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 
-BLUE_MAGIC_VALUE = 1
+BLUE_MAGIC_VALUE = 1.2
 
 
 sharpness_level = 1
 white_balance_level = 0
 
-#0-min,2 -man
+adjust_red_level = 1
+adjust_green_level = 1
+adjust_blue_level = 1
 blue_level = 1
-
 contrast_level=1
 
 gamma_level = 0
@@ -98,7 +99,7 @@ def apply_filter(mat, filt):
 
 
 def get_filter_matrix(mat):
-    global BLUE_MAGIC_VALUE,GREEN_MAGIC_VALUE
+    global BLUE_MAGIC_VALUE
     # print('called get_filter_matrix')
     mat = cv2.resize(mat, (256, 256))
 
@@ -205,6 +206,25 @@ def adjust_saturation(img, saturation_factor):
     cv2_img = np.array(img)
     return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
 
+def adjust_rgb_levels(img, r_factor,g_factor,b_factor):
+
+    opencv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    pil_image = Image.fromarray(opencv_img)
+    # Split into 3 channels
+    r, g, b = pil_image.split()
+    # adjust red
+    r = r.point(lambda i: i * r_factor)
+    # adjust green
+    g = g.point(lambda i: i * g_factor)
+    # adjust blue
+    b = b.point(lambda i: i * b_factor)
+    # Recombine back to RGB image
+    result = Image.merge('RGB', (r, g, b))
+    cv2_img = np.array(result)
+    return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
+
+
+
 def adjust_brightness(img, brightness_factor):
     opencv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # Get array of image
@@ -266,6 +286,9 @@ def correct(mat):
     if(sharpness_level!=1):
         corrected_mat = adjust_sharpness(corrected_mat,sharpness_level)
 
+    if((adjust_red_level!=1) or (adjust_green_level!=1) or (adjust_blue_level!=1)):
+        corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level, adjust_blue_level)
+
 
     #corrected_mat = convert_temp(corrected_mat,7500)
 ######################################
@@ -274,8 +297,8 @@ def correct(mat):
     #corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
 
 ######################################
-
-    corrected_mat = adjust_saturation(corrected_mat, sat_level)
+    if(sat_level!=1):
+        corrected_mat = adjust_saturation(corrected_mat, sat_level)
 
     return corrected_mat
 
@@ -462,7 +485,16 @@ def process_video(video_data, yield_preview=False):
         if (sharpness_level != 1):
             corrected_mat = adjust_sharpness(corrected_mat, sharpness_level)
 
-        corrected_mat = adjust_saturation(corrected_mat, sat_level)
+        if (sat_level != 1):
+            corrected_mat = adjust_saturation(corrected_mat, sat_level)
+
+        if ((adjust_red_level != 1) or (adjust_green_level != 1) or (adjust_blue_level != 1)):
+            corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level, adjust_blue_level)
+
+
+
+
+
         new_video.write(corrected_mat)
 
         if yield_preview:
