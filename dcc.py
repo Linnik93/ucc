@@ -17,7 +17,7 @@ sg.theme('SandyBeach')
 sg.set_options(font=("Arial", 13))
 sg.set_global_icon(LOGO)
 
-list_of_files_size = 25
+list_of_files_size = 23
 
 TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
 
@@ -26,76 +26,91 @@ image_settings_section = [
         sg.Text(text="Image Settings", size=(30, 1), font=('Arial', 15), justification='center', visible=True)
     ],
     [
-        sg.CBox(text="White balance              ", key="__WHITE_BALANCE_CB__", enable_events=True,
-                font=('Arial', 10), default=False),
-        sg.Slider(range=(-5, 5), default_value=0, resolution=0.1, size=(20, 10), orientation='h',
-                  font=('Arial', 10), key="__WHITE_BALANCE_SLIDER__", disabled=True, enable_events=True),
-    ],
-    [
-        sg.CBox(text="Manual colors level       ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(20, 10), orientation='h',
-                  font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
-    ],
-
-    [
-        sg.CBox(text="Manual blue level          ", key = "__BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
-        sg.Slider(range=(0.0, 2), default_value=1, resolution=.01, size=(20, 10), orientation='h', font=('Arial', 10), key="__BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
+        sg.Frame('Underwater restoration settings',[
+            [
+                sg.CBox(text="Manual colors level      ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
+            ],
+            [
+                sg.CBox(text="Underwater rest level    ", key = "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
+                sg.Slider(range=(0.0, 2), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
+            ]
+        ],border_width=3)
     ],
 
+    [
+        sg.Frame('Background settings', [
+            [
+                sg.CBox(text="White balance            ", key="__WHITE_BALANCE_CB__", enable_events=True,
+                        font=('Arial', 10),
+                        default=False),
+                sg.Slider(range=(-5, 5), default_value=0, resolution=0.1, size=(19, 10), orientation='h',
+                          font=('Arial', 10),
+                          key="__WHITE_BALANCE_SLIDER__", disabled=True, enable_events=True)
+            ],
 
-    [
-        sg.CBox(text="Manual saturation level  ", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
-        sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(20, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual gamma level     ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(20, 10), orientation='h',
+            [
+                sg.CBox(text="Manual saturation level", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
+                sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
+            ],
+            [
+                sg.CBox(text="Manual gamma level    ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(19, 10), orientation='h',
                   font=('Arial', 10), key="__GAMMA_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual denoising level  ", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0, 50), default_value=0, resolution=.1, size=(20, 10), orientation='h', font=('Arial', 10), key="__DENOISING_SLIDER__", disabled=True, enable_events=True)
-    ],
+            ],
+            [
+                sg.CBox(text="Manual denoising level ", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(0, 50), default_value=0, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10), key="__DENOISING_SLIDER__", disabled=True, enable_events=True)
+            ],
 
-    [
-        sg.CBox(text="Manual contrast level    ", key="__CONTRAST_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0, 3), default_value=1, resolution=.1, size=(20, 10), orientation='h', font=('Arial', 10),
+            [
+                sg.CBox(text="Manual contrast level   ", key="__CONTRAST_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(0, 3), default_value=1, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10),
                   key="__CONTRAST_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual brightness level ", key="__BRIGHTNESS_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h', font=('Arial', 10),
+            ],
+            [
+                sg.CBox(text="Manual brightness level", key="__BRIGHTNESS_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h', font=('Arial', 10),
                   key="__BRIGHTNESS_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual sharpness level ", key="__SHARPNESS_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(-5, 5), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+            ],
+            [
+                sg.CBox(text="Manual sharpness level", key="__SHARPNESS_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(-5, 5), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__SHARPNESS_SLIDER__", disabled=True, enable_events=True)
-    ],
+                ]
+            ], border_width=3)],
+
     [
-        sg.CBox(text="Manual red level            ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+        sg.Frame('Color levels', [
+            [
+                sg.CBox(text="Manual red level          ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_RED_LEVEL_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual green level        ", key="__ADJ_GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+            ],
+            [
+                sg.CBox(text="Manual green level       ", key="__ADJ_GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_GREEN_LEVEL_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.CBox(text="Manual blue level          ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-        sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(20, 10), orientation='h',
+            ],
+            [
+                sg.CBox(text="Manual blue level         ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True)
-    ],
-    [
-        sg.Text(text="", font=('Arial', 5))
-    ],
+            ],
+            [
+                sg.Text(text="", font=('Arial', 5))
+            ]
+            ] , border_width=3)],
     [
         sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 0), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (39,1))
+    ],
+    [
+        sg.Button(button_text="CORRECT", enable_events=True, pad=(4, 0), button_color='sandybrown',
+                  key="__CORRECT__", size=(39, 1))
     ],
 
 ]
@@ -105,49 +120,49 @@ left_column = [
         sg.FilesBrowse(button_text="Select photos and videos", enable_events=True, key='__INPUT_FILES__', size=(52, 1),button_color='sandybrown')
     ],
     [
-        sg.CBox(text="Enable preview", key = "__PREVIEW_CB__", enable_events=True,font=('Arial', 10),default=True),
-        sg.Text(text="           ",font=('Arial', 10)),
-        sg.Text(text="Show video frame on second: ",font=('Arial', 10)),
+    sg.Frame('Preview settings', [
+        [
+        sg.Text(text="Show video frame on second:       ",font=('Arial', 10)),
         sg.InputText(default_text=2, size=(5, 1), enable_events=True, readonly=False, key="__PREVIEW_FRAME_SECOND__",disabled_readonly_background_color="darkgray"),
-        sg.Button(button_text=" < ", enable_events=True, pad=(2, 0), button_color='sandybrown', key="__PREVIEW_PREVIOUS_FRAME__",size = (3,1),font=('Arial', 8)),
-        sg.Button(button_text=" > ", enable_events=True, pad=(2, 0), button_color='sandybrown', key="__PREVIEW_NEXT_FRAME__",size = (3,1),font=('Arial', 8)),
-    ],
-
-    [
-        sg.Listbox(values=[], enable_events=True, size=(66, list_of_files_size), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        sg.Text(text="                 ", font=('Arial', 5)),
+        sg.Button(button_text=" < ", enable_events=True, pad=(4, 0), button_color='sandybrown', key="__PREVIEW_PREVIOUS_FRAME__",size = (10,1),font=('Arial', 8)),
+        sg.Button(button_text=" > ", enable_events=True, pad=(4, 0), button_color='sandybrown', key="__PREVIEW_NEXT_FRAME__",size = (10,1),font=('Arial', 8)),
     ],
     [
-        sg.Text(text="", font=('Arial', 5))
-    ],
-    [
+        sg.CBox(text="Enable preview", key="__PREVIEW_CB__", enable_events=True, font=('Arial', 10), default=True),
+        sg.Text(text="                                            ", font=('Arial', 10)),
         sg.CBox(text="Show image settings", key="__IMG_SETTINGS_CB__", enable_events=True, font=('Arial', 10)),
-    ],
+    ]
+    ], border_width=3)],
 
+        [
+            sg.Listbox(values=[], enable_events=True, size=(66, list_of_files_size), key="__INPUT_FILE_LIST__",select_mode='multiple',font=('Arial', 10))
+        ],
 
-    [
-        sg.Text(text="",font=('Arial', 5))
-    ],
-    [
-        sg.CBox(text="Temp. folder", key = "__TEMP_FOLDER_CB__", enable_events=True),
-        sg.Text("", size=(4, 1)),
-        sg.InputText(default_text=TempDirPath, size=(21, 1), enable_events=True, readonly=False, key="__TEMP_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
-        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__TEMP_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
-    ],
-    [
-        sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
-        sg.Text("", size=(1, 1)),
-        sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
-        sg.FolderBrowse(size=(9, 1),pad=(7,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
-    ],
-    [
-        sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True,default=True),
-        sg.Text(text="", size=(1, 1)),
-        sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="darkgray")
-    ],
+        [
+            sg.Frame('File settings', [
+            [
+            sg.CBox(text="Temp. folder", key = "__TEMP_FOLDER_CB__", enable_events=True),
+            sg.Text("", size=(4, 1)),
+            sg.InputText(default_text=TempDirPath, size=(21, 1), enable_events=True, readonly=False, key="__TEMP_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
+            sg.FolderBrowse(size=(8, 1),pad=(6,1),disabled=True,key = "__TEMP_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
+        ],
+        [
+            sg.CBox(text="Output folder     ", key = "__OUTPUT_FOLDER_CB__", enable_events=True),
+            sg.Text("", size=(1, 1)),
+            sg.InputText(default_text="./", size=(21, 1), enable_events=True, readonly=False, key="__OUTPUT_FOLDER__",disabled=True,disabled_readonly_background_color="darkgray"),
+            sg.FolderBrowse(size=(8, 1),pad=(6,1),disabled=True,key = "__OUT_FOLDER_BROWSE_BUTTON__",button_color='sandybrown')
+        ],
+        [
+            sg.CBox(text="Output file prefix", key = "__OUTPUT_PREFIX_CB__", enable_events=True,default=True),
+            sg.Text(text="", size=(1, 1)),
+            sg.InputText(default_text="corrected", size=(21, 1), key="__OUTPUT_PREFIX__",disabled=False,disabled_readonly_background_color="darkgray")
+        ]
+        ], border_width=3)],
 
-    [
-        sg.Text(text="", font=('Arial', 5))
-    ],
+        [
+            sg.Text(text="", font=('Arial', 5))
+        ],
     [
         sg.Button(button_text="Correct All", enable_events=True, pad=(0, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
         sg.Button(button_text="Cancel", enable_events=True, pad=(93, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (10,1)),
@@ -164,81 +179,84 @@ left_column = [
 
 video_viewer = [
     [
-        sg.Text(text="", size=(45, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
+        sg.Text(text="", size=(62, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
     ],
-    [
+    [   sg.Frame('Processing preview', [
+        [
         sg.Image(key="__VIDEO_PREVIEW__")
-    ],
+    ]
+    ], border_width=3)],
     [
         sg.Text(" ", font=('Arial', 15), key="__PROGBAR_BR__"),
     ],
-    [
-        sg.Text("Color restoration progress:", size=(28, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",justification='left'),
+    [sg.Frame('Progress', [
+        [
+        sg.Text("Color restoration progress:", size=(36, 1), font=('Arial', 15), key="__PROGBAR_LABEL__",justification='left'),
         sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__PROGBAR_PERCENTS__",justification='right')
 
     ],
 
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__PROGBAR__")
     ],
 
     [
         sg.Text(" ", font=('Arial', 15)),
     ],
     [
-        sg.Text("Audio extraction progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_EX_PROGBAR_LABEL__",
+        sg.Text("Audio extraction progress:", size=(36, 1), font=('Arial', 15), key="__SOUND_EX_PROGBAR_LABEL__",
                 justification='left'),
         sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__SOUND_EX_PROGBAR_PERCENTS__",
                 justification='right')
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_EX_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__SOUND_EX_PROGBAR__")
     ],
 
     [
         sg.Text(" ", font=('Arial', 15)),
     ],
     [
-        sg.Text("Video encoding progress:", size=(28, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
+        sg.Text("Video encoding progress:", size=(36, 1), font=('Arial', 15), key="__SOUND_PROGBAR_LABEL__",
                 justification='left'),
         sg.Text(text="0%", font=('Arial', 15), size=(14, 1), key="__SOUND_PROGBAR_PERCENTS__",
                 justification='right')
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(37, 20), key="__SOUND_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__SOUND_PROGBAR__")
     ]
+    ], border_width=3)],
 ]
 
 photo_viewer = [
     [
         sg.Text(text="", size=(62, 1), font=('Arial', 12), key="__PHOTO_NAME__", justification='center',visible=True)
     ],
-    [
-        sg.Text(text="Initial Image:", size=(42, 1), font=('Arial', 10), key="__INIT_IMAGE_LABEL__", justification='left')
-    ],
-    [
 
+    [
+        sg.Frame('Initial image', [
+    [
         sg.Image( key="__PREVIEW_BEFORE__",size=(576,324))
+]
+    ], border_width=3)],
 
-    ],
     [
-        sg.Text(text="Final Image:", size=(45, 1), font=('Arial', 10), key="__FINAL_IMAGE_LABEL__", justification='left')
-    ],
-    [
+        sg.Frame('Final image', [
+        [
 
         sg.Image(key="__PREVIEW_AFTER__",size=(576,324))
-
-    ],
+]
+    ], border_width=3)]
 
 ]
 
 layout = [
     [
-        sg.Column(left_column,size=(490, 750)),
-        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(580, 750)),
-        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(580,750)),
+        sg.Column(left_column,size=(485, 750)),
+        sg.Column(video_viewer, key='__VIDEO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(598, 750)),
+        sg.Column(photo_viewer, key='__PHOTO_VIEWER__',visible=False, vertical_alignment="top", justification="center",size=(598,750)),
         sg.Column(image_settings_section, key='__IMG_SETTINGS__',visible=False,size=(370, 750))
     ]
 ]
@@ -377,14 +395,14 @@ if __name__ == "__main__":
                 window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
                 window["__OUTPUT_PREFIX__"].update(disabled=True)
 
-        if event == "__BLUE_LEVEL_CB__":
-            if (values["__BLUE_LEVEL_CB__"] == True):
-                window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+        if event == "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__":
+            if (values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == True):
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
             else:
-                window["__BLUE_LEVEL_SLIDER__"].update(disabled=True)
-        if event == "__BLUE_LEVEL_SLIDER__":
-            if(float(values["__BLUE_LEVEL_SLIDER__"])!=correct.blue_level):
-                correct.blue_level = values["__BLUE_LEVEL_SLIDER__"]
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=True)
+        if event == "__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__":
+            if(float(values["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"])!=correct.blue_level):
+                correct.blue_level = values["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"]
 
         if event == "__SATURATION_CB__":
             if (values["__SATURATION_CB__"] == True):
@@ -491,10 +509,10 @@ if __name__ == "__main__":
             if(values["__ADJUST_CORRECTION_SLIDER__"]!=correct.correction_level):
                 correct.correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
 
-                if ((values["__BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
+                if ((values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
                     if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1):
 
-                        window["__BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
+                        window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
                         correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
                     if (float(values["__ADJUST_CORRECTION_SLIDER__"]) == 0):
                         window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
@@ -518,9 +536,9 @@ if __name__ == "__main__":
                 correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
         """
         if event == "__COLOR_BALANCE_SLIDER__":
-            if ( (values["__BLUE_LEVEL_CB__"] == False)):
+            if ( (values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == False)):
                 correct.blue_level=2 - float(values["__COLOR_BALANCE_SLIDER__"])
-                window["__BLUE_LEVEL_SLIDER__"].update(value=(2 - float(values["__COLOR_BALANCE_SLIDER__"])))
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=(2 - float(values["__COLOR_BALANCE_SLIDER__"])))
         """
 
 
@@ -563,8 +581,8 @@ if __name__ == "__main__":
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
             window["__SATURATION_CB__"].update(disabled=True)
             #window["__SATURATION_SLIDER__"].update(disabled=True)
-            window["__BLUE_LEVEL_CB__"].update(disabled=True)
-            #window["__BLUE_LEVEL_SLIDER__"].update(disabled=True)
+            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=True)
+            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=True)
 
 
 
@@ -589,8 +607,8 @@ if __name__ == "__main__":
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             window["__SATURATION_CB__"].update(disabled=False)
             #window["__SATURATION_SLIDER__"].update(disabled=False)
-            window["__BLUE_LEVEL_CB__"].update(disabled=False)
-            #window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
 
         if event == "__CLEAR_LIST__":
@@ -603,8 +621,8 @@ if __name__ == "__main__":
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             window["__SATURATION_CB__"].update(disabled=False)
             #window["__SATURATION_SLIDER__"].update(disabled=False)
-            window["__BLUE_LEVEL_CB__"].update(disabled=False)
-            #window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
 
 
@@ -775,8 +793,8 @@ if __name__ == "__main__":
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
                 window["__SATURATION_CB__"].update(disabled=False)
                 window["__SATURATION_SLIDER__"].update(disabled=False)
-                window["__BLUE_LEVEL_CB__"].update(disabled=False)
-                window["__BLUE_LEVEL_SLIDER__"].update(disabled=False)
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
             except:
                 window["__STATUS__"].update("Error in accessing file")
