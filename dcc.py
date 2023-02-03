@@ -34,7 +34,7 @@ image_settings_section = [
             ],
             [
                 sg.CBox(text="Underwater rest level    ", key = "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
-                sg.Slider(range=(0.0, 2), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
+                sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
             ]
         ],border_width=3)
     ],
@@ -110,7 +110,7 @@ image_settings_section = [
         sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (39,1))
     ],
     [
-        sg.Button(button_text="CORRECT", enable_events=True, pad=(4, 3), button_color='sandybrown',
+        sg.Button(button_text="Save for current item", enable_events=True, pad=(4, 3), button_color='sandybrown',
                   key="__CORRECT_SINGLE__", size=(39, 1))
     ],
 
@@ -328,6 +328,8 @@ if __name__ == "__main__":
 
                 filename = os.path.basename(str(selected_item_path))
 
+                window.Element('__IMG_SETTINGS__').Update(visible=False)
+
                 if extension in IMAGE_TYPES:
                     preview = correct_image(str(selected_item_path),None,None)
                 if extension in VIDEO_TYPES:
@@ -351,20 +353,28 @@ if __name__ == "__main__":
 
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 window.Element('__PHOTO_VIEWER__').Update(visible=True)
+
+
+                if (values["__IMG_SETTINGS_CB__"] == True):
+                    window["__IMG_SETTINGS__"].update(visible=True)
+                else:
+                    if (values["__IMG_SETTINGS_CB__"] == False):
+                        window["__IMG_SETTINGS__"].update(visible=False)
+
                 window.Refresh()
             else:
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
-#####################################################################
-                #window["__INPUT_FILE_LIST__"].update(se)
-                #window["__INPUT_FILE_LIST__"].update(set_to_index=len(sel_list)-1)
-                #sg.Popup('Selected ', values["__INPUT_FILE_LIST__"])
 
+#####################################################################
+
+        if event == "__IMG_SETTINGS_CB__":
             if (values["__IMG_SETTINGS_CB__"] == True):
                 window["__IMG_SETTINGS__"].update(visible=True)
             else:
                 if (values["__IMG_SETTINGS_CB__"] == False):
                     window["__IMG_SETTINGS__"].update(visible=False)
+
 
         if event == "__PREVIEW_PREVIOUS_FRAME__":
             if(int(values["__PREVIEW_FRAME_SECOND__"])>1):
@@ -536,9 +546,9 @@ if __name__ == "__main__":
                 window["__IMG_SETTINGS__"].update(visible=False)
             else:
                 if(event == "__CORRECT_SINGLE__"):
-                    #filepaths = selected_item_path
                     filepaths  = values["__INPUT_FILE_LIST__"]
                     window["__IMG_SETTINGS__"].update(visible=False)
+
 
 
             #print("filepaths: ",filepaths)
@@ -559,6 +569,7 @@ if __name__ == "__main__":
             #window["__SATURATION_SLIDER__"].update(disabled=True)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=True)
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=True)
+
 
 
 
@@ -745,6 +756,13 @@ if __name__ == "__main__":
 
                         window.Element('__VIDEO_VIEWER__').Update(visible=False)
                         window.Element('__PHOTO_VIEWER__').Update(visible=True)
+
+                        if (values["__IMG_SETTINGS_CB__"] == True):
+                            window["__IMG_SETTINGS__"].update(visible=True)
+                        else:
+                            if (values["__IMG_SETTINGS_CB__"] == False):
+                                window["__IMG_SETTINGS__"].update(visible=False)
+
                         window.Refresh()
 
                     if extension in VIDEO_TYPES:

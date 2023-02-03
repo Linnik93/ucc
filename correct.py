@@ -21,38 +21,30 @@ from CustomLogger import video_proc_logger, audio_proc_logger
 THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
-
 BLUE_MAGIC_VALUE = 1.2
-
-
-sharpness_level = 1
-white_balance_level = 0
-
-adjust_red_level = 1
-adjust_green_level = 1
-adjust_blue_level = 1
-blue_level = 1
-contrast_level=1
-
-gamma_level = 0
-
-brightness_level=1
-
-#saturation level
-sat_level = 1.0
-
-# color balance
-cb_level = 1
-denoising_level = 0
 
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
 SAMPLE_SECONDS = 2
-
 video_fps = 0.0
 # temp folder config
 temp_dir = 'Temp'
 temp_dir_path = './' + temp_dir + '/'
+
+# default slider value of underwater restoring (need to set correct value for BLUE_MAGIC_VALUE = 2-blue_level)
+blue_level = 0.8
+sharpness_level = 1
+white_balance_level = 0
+adjust_red_level = 1
+adjust_green_level = 1
+adjust_blue_level = 1
+contrast_level=1
+gamma_level = 0
+brightness_level=1
+sat_level = 1.0
+cb_level = 1
+denoising_level = 0
+
 
 def hue_shift_red(mat, h):
     # print('called hue_shift_red')
