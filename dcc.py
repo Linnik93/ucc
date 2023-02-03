@@ -17,6 +17,7 @@ sg.theme('SandyBeach')
 sg.set_options(font=("Arial", 13))
 sg.set_global_icon(LOGO)
 
+selected_item_path=''
 list_of_files_size = 23
 
 TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
@@ -106,11 +107,11 @@ image_settings_section = [
             ]
             ] , border_width=3)],
     [
-        sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 0), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (39,1))
+        sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (39,1))
     ],
     [
-        sg.Button(button_text="CORRECT", enable_events=True, pad=(4, 0), button_color='sandybrown',
-                  key="__CORRECT__", size=(39, 1))
+        sg.Button(button_text="CORRECT", enable_events=True, pad=(4, 3), button_color='sandybrown',
+                  key="__CORRECT_SINGLE__", size=(39, 1))
     ],
 
 ]
@@ -164,8 +165,8 @@ left_column = [
             sg.Text(text="", font=('Arial', 5))
         ],
     [
-        sg.Button(button_text="Correct All", enable_events=True, pad=(0, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
-        sg.Button(button_text="Cancel", enable_events=True, pad=(93, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (10,1)),
+        sg.Button(button_text="Correct All", enable_events=True, pad=(2, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
+        sg.Button(button_text="Cancel", enable_events=True, pad=(94, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (10,1)),
         sg.Button(button_text="Clear", enable_events=True, pad=(0, 5), disabled=False, key="__CLEAR_LIST__", button_color='sandybrown',size = (10,1))
     ],
     [
@@ -197,7 +198,7 @@ video_viewer = [
     ],
 
     [
-        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__PROGBAR__")
     ],
 
     [
@@ -211,7 +212,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__SOUND_EX_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_EX_PROGBAR__")
     ],
 
     [
@@ -225,7 +226,7 @@ video_viewer = [
 
     ],
     [
-        sg.ProgressBar(100, orientation='h', size=(52, 20), key="__SOUND_PROGBAR__")
+        sg.ProgressBar(100, orientation='h', size=(44, 20), key="__SOUND_PROGBAR__")
     ]
     ], border_width=3)],
 ]
@@ -306,7 +307,7 @@ if __name__ == "__main__":
             #window["__OUTPUT_FOLDER_CB__"].visible()
             #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
 
-        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"):
+        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"):
             if(values["__PREVIEW_CB__"] == True):
 
                 #clear list
@@ -564,9 +565,17 @@ if __name__ == "__main__":
         if (event == "__OUTPUT_FOLDER__" and values["__OUTPUT_FOLDER_CB__"]==True):
             window["__OUTPUT_FOLDER__"].update(values["__OUTPUT_FOLDER__"])
 
-        if event == "__CORRECT__":
-            #window["__INPUT_FILE_LIST__"].update(select_mode='multiple')
-            filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
+        if (event == "__CORRECT__") or (event == "__CORRECT_SINGLE__"):
+
+            if (event == "__CORRECT__"):
+                filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
+                window["__IMG_SETTINGS__"].update(visible=False)
+            else:
+                if(event == "__CORRECT_SINGLE__"):
+                    #filepaths = selected_item_path
+                    filepaths  = values["__INPUT_FILE_LIST__"]
+
+            print("filepaths: ",filepaths)
             file_generator = get_files(filepaths)
             window["__CORRECT__"].update(disabled=True)
             window["__CANCEL__"].update(disabled=False)
@@ -588,6 +597,7 @@ if __name__ == "__main__":
 
 
         if event == "__CANCEL__":
+            window["__IMG_SETTINGS__"].update(visible=False)
             window["__CORRECT__"].update(disabled=False)
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=False)
@@ -612,6 +622,7 @@ if __name__ == "__main__":
 
 
         if event == "__CLEAR_LIST__":
+            window["__IMG_SETTINGS__"].update(visible=False)
             window["__INPUT_FILE_LIST__"].update(values=[])
             window["__STATUS__"].update("")
             window.Element('__VIDEO_VIEWER__').Update(visible=False)
@@ -668,6 +679,8 @@ if __name__ == "__main__":
 
                 percent, preview = next(process_video_generator)
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
+                if (values["__IMG_SETTINGS_CB__"] == True):
+                    window["__IMG_SETTINGS__"].update(visible=True)
 
                 window["__VIDEO_PREVIEW__"](data=preview)
 
