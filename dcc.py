@@ -86,19 +86,19 @@ image_settings_section = [
         sg.Frame('Color levels', [
             [
                 sg.CBox(text="Manual red level          ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
+                sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_RED_LEVEL_SLIDER__", disabled=True, enable_events=True)
             ],
             [
                 sg.CBox(text="Manual green level       ", key="__ADJ_GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
+                sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_GREEN_LEVEL_SLIDER__", disabled=True, enable_events=True)
             ],
             [
                 sg.CBox(text="Manual blue level         ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
-                sg.Slider(range=(-2, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
+                sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True)
             ],
@@ -499,34 +499,6 @@ if __name__ == "__main__":
             if (values["__WHITE_BALANCE_SLIDER__"] != correct.white_balance_level):
                 correct.white_balance_level = float(values["__WHITE_BALANCE_SLIDER__"])
 
-        """
-        if event == "__ADJUST_CORRECTION_CB__":
-            if (values["__ADJUST_CORRECTION_CB__"] == True):
-                window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=False)
-            else:
-                window["__ADJUST_CORRECTION_SLIDER__"].update(disabled=True)
-
-        if event == "__ADJUST_CORRECTION_SLIDER__":
-            if(values["__ADJUST_CORRECTION_SLIDER__"]!=correct.correction_level):
-                correct.correction_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
-
-                if ((values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == False) and (values["__COLOR_BALANCE_CB__"] == False)):
-                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) <= 1):
-
-                        window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
-                        correct.blue_level = values["__ADJUST_CORRECTION_SLIDER__"]
-                    if (float(values["__ADJUST_CORRECTION_SLIDER__"]) == 0):
-                        window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"])))
-                        correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"])
-                    else:
-                        window["__COLOR_BALANCE_SLIDER__"].update(value=(float(values["__ADJUST_CORRECTION_SLIDER__"]))+0.2)
-                        correct.cb_level = float(values["__ADJUST_CORRECTION_SLIDER__"]+0.2)
-        """
-
-
-
-
-
         if event == "__COLOR_BALANCE_CB__":
             if(values["__COLOR_BALANCE_CB__"] == True):
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
@@ -535,14 +507,6 @@ if __name__ == "__main__":
         if event == "__COLOR_BALANCE_SLIDER__":
             if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
                 correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
-        """
-        if event == "__COLOR_BALANCE_SLIDER__":
-            if ( (values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == False)):
-                correct.blue_level=2 - float(values["__COLOR_BALANCE_SLIDER__"])
-                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=(2 - float(values["__COLOR_BALANCE_SLIDER__"])))
-        """
-
-
 
         if event == "__TEMP_FOLDER_CB__":
             if (values["__TEMP_FOLDER_CB__"] == False):
@@ -574,9 +538,12 @@ if __name__ == "__main__":
                 if(event == "__CORRECT_SINGLE__"):
                     #filepaths = selected_item_path
                     filepaths  = values["__INPUT_FILE_LIST__"]
+                    window["__IMG_SETTINGS__"].update(visible=False)
 
-            print("filepaths: ",filepaths)
+
+            #print("filepaths: ",filepaths)
             file_generator = get_files(filepaths)
+
             window["__CORRECT__"].update(disabled=True)
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=True)
@@ -665,6 +632,7 @@ if __name__ == "__main__":
         if process_video_generator:
             try:
 
+                window["__IMG_SETTINGS__"].update(visible=False)
                 if (cl.video_progress_percentage > 99):
                     cl.video_progress_percentage = 100
                 if (cl.audio_progress_percentage > 99):
@@ -679,8 +647,6 @@ if __name__ == "__main__":
 
                 percent, preview = next(process_video_generator)
                 window.Element('__VIDEO_VIEWER__').Update(visible=True)
-                if (values["__IMG_SETTINGS_CB__"] == True):
-                    window["__IMG_SETTINGS__"].update(visible=True)
 
                 window["__VIDEO_PREVIEW__"](data=preview)
 
