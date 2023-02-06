@@ -20,6 +20,8 @@ sg.set_global_icon(LOGO)
 selected_item_path=''
 list_of_files_size = 23
 
+list_box_selected_item =0
+
 TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
 
 image_settings_section = [
@@ -196,7 +198,7 @@ left_column = [
 
 video_viewer = [
     [
-        sg.Text(text="", size=(62, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
+        sg.Text(text="", size=(50, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
     ],
     [   sg.Frame('Processing preview', [
         [
@@ -249,7 +251,7 @@ video_viewer = [
 
 photo_viewer = [
     [
-        sg.Text(text="", size=(62, 1), font=('Arial', 12), key="__PHOTO_NAME__", justification='center',visible=True)
+        sg.Text(text="", size=(50, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True)
     ],
 
     [
@@ -315,8 +317,11 @@ if __name__ == "__main__":
         if event == "__PREVIEW_CB__":
             if (values["__PREVIEW_CB__"] == True):
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+
             else:
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
+                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                #window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
         #if event == "Window_Event":
 
@@ -361,18 +366,22 @@ if __name__ == "__main__":
             window["__ADJ_BLUE_LEVEL_CB__"].update(value=False)
             window["__ADJ_BLUE_LEVEL_SLIDER__"].update(value=correct.adjust_blue_level)
 
-        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"):
+        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
             if(values["__PREVIEW_CB__"] == True):
 
-                #clear list
-                #window["__INPUT_FILE_LIST__"].update([])
-                window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
-                #sel_list_indexes = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
-                #print("index: ", sel_list_indexes)
 
-                #sel_list_pathes=values["__INPUT_FILE_LIST__"]
-                selected_item_path = values["__INPUT_FILE_LIST__"][0]
-                #print("EVENT FILE LIST",sel_list_pathes)
+                if event == "__INPUT_FILES__":
+                    if(values["__INPUT_FILES__"]!=''):
+                        selected_item_path = values["__INPUT_FILES__"].split(";")[0]
+
+                else:
+
+                    window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
+                    # get selected item index
+                    list_box_selected_item = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
+                    print("list_box_selected_item", list_box_selected_item)
+                    selected_item_path = values["__INPUT_FILE_LIST__"][0]
+
 #####################################################################
                 preview = None
                 preview_before = None
@@ -408,6 +417,8 @@ if __name__ == "__main__":
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 window.Element('__PHOTO_VIEWER__').Update(visible=True)
 
+                #window["__INPUT_FILE_LIST__"].update(set_to_index=list_box_selected_item[0])
+
 
                 if (values["__IMG_SETTINGS_CB__"] == True):
                     window["__IMG_SETTINGS__"].update(visible=True)
@@ -416,6 +427,7 @@ if __name__ == "__main__":
                         window["__IMG_SETTINGS__"].update(visible=False)
 
                 window.Refresh()
+
             else:
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
@@ -448,6 +460,10 @@ if __name__ == "__main__":
 
             # Change output folder to the same as input
             if len(input_filepaths) > 0:
+                if(values["__PREVIEW_CB__"] == True):
+                    window["__INPUT_FILE_LIST__"].update(set_to_index=0)
+                #if(values["__PREVIEW_CB__"] == True):
+                   #window["__PHOTO_VIEWER__"].update(visible=True)
                 window["__OUTPUT_FOLDER__"].update(os.path.dirname(input_filepaths[0]))
 
         #--------------------Checkboxes --------------------------------
@@ -772,11 +788,17 @@ if __name__ == "__main__":
                 if (cl.audio_progress_percentage == 0.0 and cl.video_progress_percentage == 0.0):
                     f = next(file_generator)
                     listbox_hight_rows = list_of_files_size
-                    window["__INPUT_FILE_LIST__"].update(set_to_index = file_index)
+
+
                     if(file_index%listbox_hight_rows==0):
                         window["__INPUT_FILE_LIST__"].update(scroll_to_index = file_index)
                     file_index += 1
                     current_in_filename=os.path.basename(f)
+
+                    if(event == "__CORRECT_SINGLE__"):
+                        window["__INPUT_FILE_LIST__"].update(set_to_index = list_box_selected_item)
+                    else:
+                        window["__INPUT_FILE_LIST__"].update(set_to_index=file_index-1)
 
                     if(values["__OUTPUT_PREFIX_CB__"] == True):
                        new_filename = values["__OUTPUT_PREFIX__"] + "_" + os.path.basename(f)

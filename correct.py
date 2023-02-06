@@ -6,12 +6,12 @@ import threading
 import numpy as np
 import cv2
 import math
-#import skimage
+
 from PIL import Image, ImageEnhance, ImageFilter
 
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
-#from skimage import img_as_ubyte
+
 
 import CustomLogger
 from CustomLogger import video_proc_logger, audio_proc_logger
