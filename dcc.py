@@ -30,10 +30,12 @@ image_settings_section = [
         sg.Frame('Underwater restoration settings',[
             [
                 sg.CBox(text="Manual colors level      ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
             ],
             [
                 sg.CBox(text="Underwater rest level    ", key = "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
             ]
         ],border_width=3)
@@ -42,9 +44,10 @@ image_settings_section = [
     [
         sg.Frame('Background settings', [
             [
-                sg.CBox(text="White balance            ", key="__WHITE_BALANCE_CB__", enable_events=True,
+                sg.CBox(text="White balance", key="__WHITE_BALANCE_CB__", enable_events=True,
                         font=('Arial', 10),
                         default=False),
+                sg.Push(),
                 sg.Slider(range=(-5, 5), default_value=0, resolution=0.1, size=(19, 10), orientation='h',
                           font=('Arial', 10),
                           key="__WHITE_BALANCE_SLIDER__", disabled=True, enable_events=True)
@@ -52,30 +55,36 @@ image_settings_section = [
 
             [
                 sg.CBox(text="Manual saturation level", key="__SATURATION_CB__", enable_events=True,font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0.0, 2), default_value=1.0, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10), key="__SATURATION_SLIDER__", disabled=True, enable_events=True)
             ],
             [
-                sg.CBox(text="Manual gamma level    ", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
+                sg.CBox(text="Manual gamma level", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(19, 10), orientation='h',
                   font=('Arial', 10), key="__GAMMA_SLIDER__", disabled=True, enable_events=True)
             ],
             [
-                sg.CBox(text="Manual denoising level ", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
+                sg.CBox(text="Manual denoising level", key="__DENOISING_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 50), default_value=0, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10), key="__DENOISING_SLIDER__", disabled=True, enable_events=True)
             ],
 
             [
-                sg.CBox(text="Manual contrast level   ", key="__CONTRAST_CB__", enable_events=True, font=('Arial', 10)),
+                sg.CBox(text="Manual contrast level", key="__CONTRAST_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 3), default_value=1, resolution=.1, size=(19, 10), orientation='h', font=('Arial', 10),
                   key="__CONTRAST_SLIDER__", disabled=True, enable_events=True)
             ],
             [
                 sg.CBox(text="Manual brightness level", key="__BRIGHTNESS_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h', font=('Arial', 10),
                   key="__BRIGHTNESS_SLIDER__", disabled=True, enable_events=True)
             ],
             [
                 sg.CBox(text="Manual sharpness level", key="__SHARPNESS_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(-5, 5), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__SHARPNESS_SLIDER__", disabled=True, enable_events=True)
@@ -85,19 +94,22 @@ image_settings_section = [
     [
         sg.Frame('Color levels', [
             [
-                sg.CBox(text="Manual red level          ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.CBox(text="Manual red level         ", key="__ADJ_RED_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_RED_LEVEL_SLIDER__", disabled=True, enable_events=True)
             ],
             [
                 sg.CBox(text="Manual green level       ", key="__ADJ_GREEN_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_GREEN_LEVEL_SLIDER__", disabled=True, enable_events=True)
             ],
             [
-                sg.CBox(text="Manual blue level         ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.CBox(text="Manual blue level       ", key="__ADJ_BLUE_LEVEL_CB__", enable_events=True, font=('Arial', 10)),
+                sg.Push(),
                 sg.Slider(range=(0, 3), default_value=1.0, resolution=0.01, size=(19, 10), orientation='h',
                   font=('Arial', 10),
                   key="__ADJ_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True)
@@ -107,11 +119,15 @@ image_settings_section = [
             ]
             ] , border_width=3)],
     [
-        sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (39,1))
+        sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (40,1))
     ],
     [
-        sg.Button(button_text="Save for current item", enable_events=True, pad=(4, 3), button_color='sandybrown',
-                  key="__CORRECT_SINGLE__", size=(39, 1))
+        sg.Button(button_text="RESTORE DEFAULT SETTINGS", enable_events=True, pad=(4, 3), button_color='sandybrown',
+                  key="__RESTORE_DEFAULT_SETTINGS__", size=(40, 1))
+    ],
+    [
+        sg.Button(button_text="SAVE FOR CURRENT ITEM", enable_events=True, pad=(4, 3), button_color='sandybrown',
+                  key="__CORRECT_SINGLE__", size=(40, 1))
     ],
 
 ]
@@ -306,6 +322,44 @@ if __name__ == "__main__":
 
             #window["__OUTPUT_FOLDER_CB__"].visible()
             #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
+        if event == "__RESTORE_DEFAULT_SETTINGS__":
+            correct.blue_level = 0.8
+            correct.sharpness_level = 1
+            correct.white_balance_level = 0
+            correct.adjust_red_level = 1
+            correct.adjust_green_level = 1
+            correct.adjust_blue_level = 1
+            correct.contrast_level = 1
+            correct.gamma_level = 0
+            correct.brightness_level = 1
+            correct.sat_level = 1.0
+            correct.cb_level = 1
+            correct.denoising_level = 0
+
+            window["__COLOR_BALANCE_CB__"].update(value=False)
+            window["__COLOR_BALANCE_SLIDER__"].update(value=correct.cb_level)
+            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(value=False)
+            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=correct.blue_level)
+            window["__WHITE_BALANCE_CB__"].update(value=False)
+            window["__WHITE_BALANCE_SLIDER__"].update(value=correct.white_balance_level)
+            window["__SATURATION_CB__"].update(value=False)
+            window["__SATURATION_SLIDER__"].update(value=correct.sat_level)
+            window["__GAMMA_CB__"].update(value=False)
+            window["__GAMMA_SLIDER__"].update(value=correct.gamma_level)
+            window["__DENOISING_CB__"].update(value=False)
+            window["__DENOISING_SLIDER__"].update(value=correct.denoising_level)
+            window["__CONTRAST_CB__"].update(value=False)
+            window["__CONTRAST_SLIDER__"].update(value=correct.contrast_level)
+            window["__BRIGHTNESS_CB__"].update(value=False)
+            window["__BRIGHTNESS_SLIDER__"].update(value=correct.brightness_level)
+            window["__SHARPNESS_CB__"].update(value=False)
+            window["__SHARPNESS_SLIDER__"].update(value=correct.sharpness_level)
+            window["__ADJ_RED_LEVEL_CB__"].update(value=False)
+            window["__ADJ_RED_LEVEL_SLIDER__"].update(value=correct.adjust_red_level)
+            window["__ADJ_GREEN_LEVEL_CB__"].update(value=False)
+            window["__ADJ_GREEN_LEVEL_SLIDER__"].update(value=correct.adjust_green_level)
+            window["__ADJ_BLUE_LEVEL_CB__"].update(value=False)
+            window["__ADJ_BLUE_LEVEL_SLIDER__"].update(value=correct.adjust_blue_level)
 
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"):
             if(values["__PREVIEW_CB__"] == True):
