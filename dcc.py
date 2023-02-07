@@ -317,7 +317,6 @@ if __name__ == "__main__":
         if event == "__PREVIEW_CB__":
             if (values["__PREVIEW_CB__"] == True):
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
-
             else:
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
                 #window.Element('__VIDEO_VIEWER__').Update(visible=False)
@@ -367,64 +366,73 @@ if __name__ == "__main__":
             window["__ADJ_BLUE_LEVEL_SLIDER__"].update(value=correct.adjust_blue_level)
 
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
-            if(values["__PREVIEW_CB__"] == True):
 
+
+            if ((values["__PREVIEW_CB__"] == True)):
                 window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
 
                 if event == "__INPUT_FILES__":
                     if(values["__INPUT_FILES__"]!=''):
                         selected_item_path = values["__INPUT_FILES__"].split(";")[0]
-
                 else:
                     # get selected item index
-                    list_box_selected_item = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
-                    selected_item_path = values["__INPUT_FILE_LIST__"][0]
-
-#####################################################################
-                preview = None
-                preview_before = None
-                preview_after = None
-
-                extension = str(selected_item_path)[str(selected_item_path).rfind("."):].lower()
-
-                filename = os.path.basename(str(selected_item_path))
-
-                window.Element('__IMG_SETTINGS__').Update(visible=False)
-
-                if extension in IMAGE_TYPES:
-                    preview = correct_image(str(selected_item_path),None,None)
-                if extension in VIDEO_TYPES:
-
-                    video_duration=correct.get_video_duration(str(selected_item_path))
-                    preview_second = float(values["__PREVIEW_FRAME_SECOND__"])
-
-
-                    if(int(preview_second)<int(video_duration)):
-                        preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
+                    if(len(values["__INPUT_FILE_LIST__"])==0):
+                        if(len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()])!=0):
+                            window["__INPUT_FILE_LIST__"].update(set_to_index=0)
+                            selected_item_path = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()][0]
+                        else:
+                            selected_item_path == ''
                     else:
-                        preview = correct_image(None, None, correct.get_video_frame(str(selected_item_path), round(int(video_duration)-1)))
-
-                preview_before = preview[0]
-                preview_after = preview[1]
-
-                window["__PHOTO_NAME__"].update("Preprocessing of file: "+filename)
-
-                window["__PREVIEW_BEFORE__"](data=preview_before)
-                window["__PREVIEW_AFTER__"](data=preview_after)
-
-                window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                window.Element('__PHOTO_VIEWER__').Update(visible=True)
-
-                #window["__INPUT_FILE_LIST__"].update(set_to_index=list_box_selected_item[0])
+                        list_box_selected_item = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
+                        selected_item_path = values["__INPUT_FILE_LIST__"][0]
 
 
-                if (values["__IMG_SETTINGS_CB__"] == True):
-                    window["__IMG_SETTINGS__"].update(visible=True)
-                else:
-                    if (values["__IMG_SETTINGS_CB__"] == False):
-                        window["__IMG_SETTINGS__"].update(visible=False)
+                if(selected_item_path != ''):
+#####################################################################
+                    preview = None
+                    preview_before = None
+                    preview_after = None
 
-                window.Refresh()
+                    extension = str(selected_item_path)[str(selected_item_path).rfind("."):].lower()
+
+                    filename = os.path.basename(str(selected_item_path))
+
+                    window.Element('__IMG_SETTINGS__').Update(visible=False)
+
+                    if extension in IMAGE_TYPES:
+                        preview = correct_image(str(selected_item_path),None,None)
+                    if extension in VIDEO_TYPES:
+
+                        video_duration=correct.get_video_duration(str(selected_item_path))
+                        preview_second = float(values["__PREVIEW_FRAME_SECOND__"])
+
+
+                        if(int(preview_second)<int(video_duration)):
+                            preview = correct_image(None,None,correct.get_video_frame(str(selected_item_path), preview_second))
+                        else:
+                            preview = correct_image(None, None, correct.get_video_frame(str(selected_item_path), round(int(video_duration)-1)))
+
+                    preview_before = preview[0]
+                    preview_after = preview[1]
+
+                    window["__PHOTO_NAME__"].update("Preprocessing of file: "+filename)
+
+                    window["__PREVIEW_BEFORE__"](data=preview_before)
+                    window["__PREVIEW_AFTER__"](data=preview_after)
+
+                    window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                    window.Element('__PHOTO_VIEWER__').Update(visible=True)
+
+                    #window["__INPUT_FILE_LIST__"].update(set_to_index=list_box_selected_item[0])
+
+
+                    if (values["__IMG_SETTINGS_CB__"] == True):
+                        window["__IMG_SETTINGS__"].update(visible=True)
+                    else:
+                        if (values["__IMG_SETTINGS_CB__"] == False):
+                            window["__IMG_SETTINGS__"].update(visible=False)
+
+                    window.Refresh()
 
             else:
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
