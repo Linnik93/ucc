@@ -369,17 +369,15 @@ if __name__ == "__main__":
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
             if(values["__PREVIEW_CB__"] == True):
 
+                window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
 
                 if event == "__INPUT_FILES__":
                     if(values["__INPUT_FILES__"]!=''):
                         selected_item_path = values["__INPUT_FILES__"].split(";")[0]
 
                 else:
-
-                    window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
                     # get selected item index
                     list_box_selected_item = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
-                    print("list_box_selected_item", list_box_selected_item)
                     selected_item_path = values["__INPUT_FILE_LIST__"][0]
 
 #####################################################################
