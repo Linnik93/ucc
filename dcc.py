@@ -26,7 +26,7 @@ TempDirPath = os.path.expanduser('~/Documents').replace('\\',"/")+"/UCC/"
 
 image_settings_section = [
     [
-        sg.Text(text="Image Settings", size=(30, 1), font=('Arial', 15), justification='center', visible=True)
+        sg.Text(text="Image Settings", size=(34, 1), font=('Arial', 15), justification='center', visible=True, background_color='#90EE90')
     ],
     [
         sg.Frame('Underwater restoration settings',[
@@ -121,6 +121,9 @@ image_settings_section = [
             ]
             ] , border_width=3)],
     [
+        sg.Text(text="", font=('Arial', 40))
+    ],
+    [
         sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (40,1))
     ],
     [
@@ -180,7 +183,7 @@ left_column = [
         ], border_width=3)],
 
         [
-            sg.Text(text="", font=('Arial', 5))
+            sg.Text(text="", font=('Arial', 1))
         ],
     [
         sg.Button(button_text="Correct All", enable_events=True, pad=(2, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
@@ -191,14 +194,14 @@ left_column = [
         sg.Text(text="", font=('Arial', 1))
     ],
     [
-        sg.Text(text="", size=(35, 1), text_color='black', key="__STATUS__")
+        sg.Text(text="", size=(54, 1), text_color='black', key="__STATUS__", background_color='#FFCF40')
     ]
 ]
 
 
 video_viewer = [
     [
-        sg.Text(text="", size=(50, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True)
+        sg.Text(text="", size=(54, 1), font=('Arial', 15), key="__VIDEO_NAME__", justification='center', visible=True,background_color='#FFCF40')
     ],
     [   sg.Frame('Processing preview', [
         [
@@ -251,7 +254,7 @@ video_viewer = [
 
 photo_viewer = [
     [
-        sg.Text(text="", size=(50, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True)
+        sg.Text(text="", size=(54, 1), font=('Arial', 15), key="__PHOTO_NAME__", justification='center',visible=True,background_color='#FFCF40')
     ],
 
     [
