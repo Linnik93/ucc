@@ -645,24 +645,24 @@ if __name__ == "__main__":
 
 
 
-            #print("filepaths: ",filepaths)
+
             file_generator = get_files(filepaths)
 
             window["__CORRECT__"].update(disabled=True)
             window["__CANCEL__"].update(disabled=False)
             window["__CLEAR_LIST__"].update(disabled=True)
 
-            #window["__INPUT_FILE_LIST__"].update(disabled=True)
+
             window["__PREVIEW_CB__"].update(disabled=True)
             window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
             window["__REFRESH_PREVIEW__"].update(disabled=True)
 
             window["__COLOR_BALANCE_CB__"].update(disabled=True)
-            #window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
+
             window["__SATURATION_CB__"].update(disabled=True)
-            #window["__SATURATION_SLIDER__"].update(disabled=True)
+
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=True)
-            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=True)
+
 
 
 
