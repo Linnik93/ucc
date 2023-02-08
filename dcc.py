@@ -208,8 +208,8 @@ left_column = [
     [
         sg.Text(text="", font=('Arial', 1))
     ],
-    [
-        sg.Text(text="", size=(54, 1), text_color='black', key="__STATUS__", background_color='darkgray')
+    [   sg.Text( text="STATUS: ", text_color='black'),
+        sg.Text( text="", size=(43, 1), text_color='black', key="__STATUS__", background_color='darkgray',)
     ]
 ]
 
