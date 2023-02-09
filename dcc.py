@@ -42,9 +42,7 @@ image_settings_section = [
             ]
         ],border_width=3)
     ],
-    [
-        sg.Text(text="", font=('Arial', 1))
-    ],
+
 
     [
         sg.Frame('Background settings', [
@@ -66,7 +64,7 @@ image_settings_section = [
             [
                 sg.CBox(text="Manual gamma level", key="__GAMMA_CB__", enable_events=True, font=('Arial', 10)),
                 sg.Push(),
-                sg.Slider(range=(0.0, 3), default_value=0, resolution=.1, size=(19, 10), orientation='h',
+                sg.Slider(range=(0.0, 3), default_value=1, resolution=.1, size=(19, 10), orientation='h',
                   font=('Arial', 10), key="__GAMMA_SLIDER__", disabled=True, enable_events=True)
             ],
             [
@@ -95,9 +93,6 @@ image_settings_section = [
                   key="__SHARPNESS_SLIDER__", disabled=True, enable_events=True)
                 ]
             ], border_width=3)],
-    [
-        sg.Text(text="", font=('Arial', 1))
-    ],
 
     [
         sg.Frame('Color levels', [
@@ -127,16 +122,9 @@ image_settings_section = [
             ]
             ] , border_width=3)],
     [
-        sg.Text(text="", font=('Arial', 1))
-    ],
-    [
-        sg.Text(text="", font=('Arial', 1))
-    ],
-    [
-        sg.Text(text="", font=('Arial', 1))
-    ],
-    [
-        sg.Text(text="", font=('Arial', 1))
+
+            sg.Listbox(values="", enable_events=True, size=(58, 4), key="__PREVIEW_STATUS__",select_mode='multiple',font=('Arial', 8))
+
     ],
     [
         sg.Button(button_text="REFRESH PREVIEW", enable_events=True, pad=(4, 3), button_color='sandybrown', key="__REFRESH_PREVIEW__",size = (40,1))
@@ -168,7 +156,7 @@ left_column = [
     [
         sg.CBox(text="Enable preview", key="__PREVIEW_CB__", enable_events=True, font=('Arial', 10), default=True),
         sg.Text(text="                                            ", font=('Arial', 10)),
-        sg.CBox(text="Show image settings", key="__IMG_SETTINGS_CB__", enable_events=True, font=('Arial', 10)),
+        sg.CBox(text="Show image settings", key="__IMG_SETTINGS_CB__", enable_events=True, font=('Arial', 10), disabled = True),
     ]
     ], border_width=3)],
 
@@ -335,15 +323,16 @@ if __name__ == "__main__":
         if event == "__PREVIEW_CB__":
             if (values["__PREVIEW_CB__"] == True):
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+                if(len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()])!=0):
+                    window["__IMG_SETTINGS_CB__"].update(disabled=False)
+
             else:
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
-                #window.Element('__VIDEO_VIEWER__').Update(visible=False)
-                #window.Element('__PHOTO_VIEWER__').Update(visible=False)
+                window["__IMG_SETTINGS_CB__"].update(value=False)
+                window["__IMG_SETTINGS__"].update(visible=False)
+                window["__IMG_SETTINGS_CB__"].update(disabled=True)
 
-        #if event == "Window_Event":
 
-            #window["__OUTPUT_FOLDER_CB__"].visible()
-            #print("Test window resizing: ",window.size,"Element visible = ",window["__PHOTO_VIEWER__"].visible)
         if event == "__RESTORE_DEFAULT_SETTINGS__":
             correct.blue_level = 0.8
             correct.sharpness_level = 1
@@ -352,7 +341,7 @@ if __name__ == "__main__":
             correct.adjust_green_level = 1
             correct.adjust_blue_level = 1
             correct.contrast_level = 1
-            correct.gamma_level = 0
+            correct.gamma_level = 1
             correct.brightness_level = 1
             correct.sat_level = 1.0
             correct.cb_level = 1
@@ -385,6 +374,11 @@ if __name__ == "__main__":
 
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
 
+
+            if(event == "__REFRESH_PREVIEW__"):
+                correct.preview_log = ''
+                correct.preview_errors_log = []
+                correct.preview_mode = 1
 
             if ((values["__PREVIEW_CB__"] == True)):
                 window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
@@ -450,7 +444,31 @@ if __name__ == "__main__":
                         if (values["__IMG_SETTINGS_CB__"] == False):
                             window["__IMG_SETTINGS__"].update(visible=False)
 
+                    if (event == "__REFRESH_PREVIEW__"):
+
+                        preview_error_list = []
+                        if(len(correct.preview_errors_log)==0):
+                            #print("No errors")
+                            correct.preview_log = 'No errors. All settings are correct.'
+                            preview_error_list.append(correct.preview_log)
+                        else:
+                            #print("The are several errors: ",len(correct.preview_errors_log))
+                            if(len(correct.preview_errors_log)>1):
+                                correct.preview_log = 'There are '+ str(len(correct.preview_errors_log)) + ' errors:\n'
+                            else:
+                                correct.preview_log = 'There is ' + str(len(correct.preview_errors_log)) + ' error:\n'
+                            preview_error_list.append(correct.preview_log)
+                            for item in correct.preview_errors_log:
+                                preview_error_list.append(' --- '+ str(item))
+
+                        window["__PREVIEW_STATUS__"].update(values=preview_error_list)
+                        correct.preview_mode = 0
+
+
+
                     window.Refresh()
+
+
 
             else:
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
@@ -489,6 +507,9 @@ if __name__ == "__main__":
                 #if(values["__PREVIEW_CB__"] == True):
                    #window["__PHOTO_VIEWER__"].update(visible=True)
                 window["__OUTPUT_FOLDER__"].update(os.path.dirname(input_filepaths[0]))
+
+            if(len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()])!=0):
+                window["__IMG_SETTINGS_CB__"].update(disabled=False)
 
         #--------------------Checkboxes --------------------------------
         if event == "__OUTPUT_FOLDER_CB__":
@@ -638,8 +659,12 @@ if __name__ == "__main__":
             if (event == "__CORRECT__"):
                 filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
                 window["__IMG_SETTINGS__"].update(visible=False)
+                # clear preview listbox
+                window["__PREVIEW_STATUS__"].update(values='')
             else:
                 if(event == "__CORRECT_SINGLE__"):
+                    # clear preview listbox
+                    window["__PREVIEW_STATUS__"].update(values='')
                     filepaths  = values["__INPUT_FILE_LIST__"]
                     window["__IMG_SETTINGS__"].update(visible=False)
 
@@ -701,6 +726,9 @@ if __name__ == "__main__":
             window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
             window["__COLOR_BALANCE_CB__"].update(disabled=False)
+
+            window["__IMG_SETTINGS_CB__"].update(disabled=True)
+
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             window["__SATURATION_CB__"].update(disabled=False)
             #window["__SATURATION_SLIDER__"].update(disabled=False)

@@ -39,11 +39,18 @@ adjust_red_level = 1
 adjust_green_level = 1
 adjust_blue_level = 1
 contrast_level=1
-gamma_level = 0
+gamma_level = 1
 brightness_level=1
 sat_level = 1.0
 cb_level = 1
 denoising_level = 0
+
+
+#preview
+preview_mode = 0
+preview_log=''
+preview_errors_log = []
+
 
 
 def hue_shift_red(mat, h):
@@ -251,35 +258,77 @@ def correct(mat):
     original_mat = mat.copy()
 
     if(blue_level != 0):
-        filter_matrix = get_filter_matrix(mat)
-        corrected_mat = apply_filter(original_mat, filter_matrix)
-        corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+        try:
+            filter_matrix = get_filter_matrix(mat)
+            corrected_mat = apply_filter(original_mat, filter_matrix)
+            corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+        except:
+            print("Error in underwater frame color restoration. Try to change restoration level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in underwater frame color restoration. Try to change restoration level.")
 
     else:
         corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
 
 
-    if(cb_level!=0):
-        corrected_mat = balance_colors(corrected_mat, cb_level)
 
-    if(gamma_level!=0):
-        corrected_mat = adjust_gamma(corrected_mat, gamma_level)
+    if(cb_level!=0):
+        try:
+            corrected_mat = balance_colors(corrected_mat, cb_level)
+        except:
+            print("Frame color alignment error. Try to change colors level.")
+            if(preview_mode == 1): preview_errors_log.append("Frame color alignment error. Try to change colors level.")
+
+    if(gamma_level!=1):
+        try:
+            corrected_mat = adjust_gamma(corrected_mat, gamma_level)
+        except:
+            print("Gamma adjustment error. Try to change gamma level.")
+            if(preview_mode == 1): preview_errors_log.append("Gamma adjustment error. Try to change gamma level.")
     if(denoising_level!=0):
-        corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+        try:
+            corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+        except:
+            print("Error in noise correction. Try to change denoising level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in noise correction. Try to change denoising level.")
 
     if(white_balance_level!=0):
-        corrected_mat=white_balance(corrected_mat, white_balance_level)
-
+        try:
+            corrected_mat=white_balance(corrected_mat, white_balance_level)
+        except:
+            print("Error in white balance correction. Try to change white balance level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in white balance correction. Try to change white balance level.")
     if(contrast_level!=1):
-        corrected_mat = cv2_enhance_contrast(corrected_mat,contrast_level)
+        try:
+            corrected_mat = cv2_enhance_contrast(corrected_mat,contrast_level)
+        except:
+            print("Error in contrast correction. Try to change contrast level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in contrast correction. Try to change contrast level.")
+
     if(brightness_level!=1):
-        corrected_mat = adjust_brightness(corrected_mat,brightness_level)
-
+        try:
+            corrected_mat = adjust_brightness(corrected_mat,brightness_level)
+        except:
+            print("Error in brightness correction. Try to change brightness level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in brightness correction. Try to change brightness level.")
     if(sharpness_level!=1):
-        corrected_mat = adjust_sharpness(corrected_mat,sharpness_level)
+        try:
+            corrected_mat = adjust_sharpness(corrected_mat,sharpness_level)
 
+        except:
+            print("Error in sharpness correction. Try to change sharpness level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in sharpness correction. Try to change sharpness level.")
+    if (sat_level != 1):
+        try:
+            corrected_mat = adjust_saturation(corrected_mat, sat_level)
+        except:
+            print("Error in saturation correction. Try to change saturation level.")
+            if(preview_mode == 1): preview_errors_log.append("Error in saturation correction. Try to change saturation level.")
     if((adjust_red_level!=1) or (adjust_green_level!=1) or (adjust_blue_level!=1)):
-        corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level, adjust_blue_level)
+        try:
+            corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level, adjust_blue_level)
+        except:
+            print("Error in RGB correction. Try to change RGB levels.")
+            if(preview_mode == 1): preview_errors_log.append("Error in RGB correction. Try to change RGB levels.")
 
 
     #corrected_mat = convert_temp(corrected_mat,7500)
@@ -289,8 +338,7 @@ def correct(mat):
     #corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
 
 ######################################
-    if(sat_level!=1):
-        corrected_mat = adjust_saturation(corrected_mat, sat_level)
+
 
     return corrected_mat
 
@@ -450,43 +498,68 @@ def process_video(video_data, yield_preview=False):
         # Apply the filter
         rgb_mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         if (blue_level != 0):
-            interpolated_filter_matrix = get_interpolated_filter_matrix(count)
-            corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
-            corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+            try:
+                interpolated_filter_matrix = get_interpolated_filter_matrix(count)
+                corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
+                corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
+            except:
+                print("Error in underwater frame color restoration. Try to change restoration level.")
+
         else:
             corrected_mat = cv2.cvtColor(rgb_mat, cv2.COLOR_RGB2BGR)
 
-        if(cb_level!=0):
-            corrected_mat = balance_colors(corrected_mat, cb_level)
+        if (cb_level != 0):
+            try:
+                corrected_mat = balance_colors(corrected_mat, cb_level)
+            except:
+                print("Frame color alignment error. Try to change colors level.")
 
-        if (gamma_level != 0):
-            corrected_mat = adjust_gamma(corrected_mat, gamma_level)
-
+        if (gamma_level != 1):
+            try:
+                corrected_mat = adjust_gamma(corrected_mat, gamma_level)
+            except:
+                print("Gamma adjustment error. Try to change gamma level.")
         if (denoising_level != 0):
-            corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+            try:
+                corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level,
+                                                                7, 21)
+            except:
+                print("Error in noise correction. Try to change denoising level.")
 
         if (white_balance_level != 0):
-            corrected_mat = white_balance(corrected_mat, white_balance_level)
-
+            try:
+                corrected_mat = white_balance(corrected_mat, white_balance_level)
+            except:
+                print("Error in white balance correction. Try to change white balance level.")
         if (contrast_level != 1):
-            corrected_mat = cv2_enhance_contrast(corrected_mat, contrast_level)
+            try:
+                corrected_mat = cv2_enhance_contrast(corrected_mat, contrast_level)
+            except:
+                print("Error in contrast correction. Try to change contrast level.")
 
         if (brightness_level != 1):
-            corrected_mat = adjust_brightness(corrected_mat, brightness_level)
-
+            try:
+                corrected_mat = adjust_brightness(corrected_mat, brightness_level)
+            except:
+                print("Error in brightness correction. Try to change brightness level.")
         if (sharpness_level != 1):
-            corrected_mat = adjust_sharpness(corrected_mat, sharpness_level)
-
+            try:
+                corrected_mat = adjust_sharpness(corrected_mat, sharpness_level)
+            except:
+                print("Error in sharpness correction. Try to change sharpness level.")
         if (sat_level != 1):
-            corrected_mat = adjust_saturation(corrected_mat, sat_level)
-
+            try:
+                corrected_mat = adjust_saturation(corrected_mat, sat_level)
+            except:
+                print("Error in saturation correction. Try to change saturation level.")
         if ((adjust_red_level != 1) or (adjust_green_level != 1) or (adjust_blue_level != 1)):
-            corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level, adjust_blue_level)
+            try:
+                corrected_mat = adjust_rgb_levels(corrected_mat, adjust_red_level, adjust_green_level,
+                                                  adjust_blue_level)
+            except:
+                print("Error in RGB correction. Try to change RGB levels.")
 
-
-
-
-
+#########################################################################
         new_video.write(corrected_mat)
 
         if yield_preview:
