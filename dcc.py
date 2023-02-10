@@ -5,13 +5,20 @@ import PySimpleGUI as sg
 import os
 import CustomLogger as cl
 import correct
+import logo.logo
+
 from correct import correct_image, analyze_video, process_video
 
 progress_val = ''
 current_in_filename = ""
 
-with open("./logo/logo UCC.png", "rb") as img_file:
-    LOGO = base64.b64encode(img_file.read())
+try:
+    with open("./logo/logo UCC.png", "rb") as img_file:
+        LOGO = base64.b64encode(img_file.read())
+except:
+    LOGO = logo.logo.LOGO
+
+
 
 IMAGE_TYPES = (".png", ".jpeg", ".jpg", ".bmp")
 VIDEO_TYPES = (".mp4", ".mkv", ".avi")
@@ -329,6 +336,7 @@ if __name__ == "__main__":
                 if(len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()])!=0):
                     window["__IMG_SETTINGS_CB__"].update(disabled=False)
 
+
             else:
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
                 window["__IMG_SETTINGS_CB__"].update(value=False)
@@ -377,9 +385,6 @@ if __name__ == "__main__":
 
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
 
-
-
-
             if(event == "__REFRESH_PREVIEW__"):
                 correct.preview_log = ''
                 correct.preview_errors_log = []
@@ -387,6 +392,7 @@ if __name__ == "__main__":
 
             if ((values["__PREVIEW_CB__"] == True)):
                 window["__INPUT_FILE_LIST__"].update(select_mode='SINGLE')
+
 
                 if event == "__INPUT_FILES__":
                     if(values["__INPUT_FILES__"]!=''):
@@ -406,8 +412,7 @@ if __name__ == "__main__":
                         list_box_selected_item = window.Element('__INPUT_FILE_LIST__').Widget.curselection()
                         selected_item_path = values["__INPUT_FILE_LIST__"][0]
 
-
-
+                #print("LEN", len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()]))
                 if(selected_item_path != ''):
 #####################################################################
                     preview = None
@@ -477,7 +482,7 @@ if __name__ == "__main__":
 
                     window.Refresh()
 
-
+                    selected_item_path=''
 
             else:
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
@@ -749,8 +754,9 @@ if __name__ == "__main__":
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
-            window["__INPUT_FILES__"].update("")
-            window["__INPUT_FILES__"].update(text = "Select photos and videos")
+            #window["__INPUT_FILES__"]("")
+            #window["__INPUT_FILES__"].update(values,list=None)
+            #print("VALUES: ",values["__INPUT_FILES__"])
 
 
 
