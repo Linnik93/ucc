@@ -500,9 +500,20 @@ if __name__ == "__main__":
 
         if event == "__INPUT_FILES__":
 
+            list_items = []
             existing_filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
             filepaths = existing_filepaths + values["__INPUT_FILES__"].split(";")
 
+            for item in filepaths:
+                if item not in list_items:
+                    list_items.append(item)
+
+            filepaths=list_items
+
+
+            ################################################
+
+            #########################################################
             # Populate listbox with filenames
             input_filepaths = [f for f in filepaths if valid_file(f)]
             window["__INPUT_FILE_LIST__"].update(input_filepaths)
@@ -691,11 +702,6 @@ if __name__ == "__main__":
             #window["__SATURATION_CB__"].update(disabled=True)
 
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=True)
-
-
-
-
-
 
         if event == "__CANCEL__":
             window["__IMG_SETTINGS__"].update(visible=False)
