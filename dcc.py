@@ -12,6 +12,8 @@ from correct import correct_image, analyze_video, process_video
 progress_val = ''
 current_in_filename = ""
 
+output_filepath=""
+
 try:
     with open("./logo/logo UCC.png", "rb") as img_file:
         LOGO = base64.b64encode(img_file.read())
@@ -199,9 +201,11 @@ left_column = [
             sg.Text(text="", font=('Arial', 1))
         ],
     [
-        sg.Button(button_text="Correct All", enable_events=True, pad=(2, 5), button_color='sandybrown', key="__CORRECT__",size = (10,1)),
-        sg.Button(button_text="Cancel", enable_events=True, pad=(94, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (10,1)),
-        sg.Button(button_text="Clear", enable_events=True, pad=(0, 5), disabled=False, key="__CLEAR_LIST__", button_color='sandybrown',size = (10,1))
+        sg.Button(button_text="Correct All", enable_events=True, pad=(4, 5), button_color='sandybrown', key="__CORRECT__",size = (9,1)),
+        sg.Button(button_text="Correct", enable_events=True, pad=(4, 5), button_color='sandybrown', key="__CORRECT_SINGLE_ITEM__", size=(9, 1)),
+        sg.Button(button_text="Cancel", enable_events=True, pad=(4, 5), disabled=True, key="__CANCEL__", button_color='sandybrown',size = (9,1)),
+        sg.Button(button_text="Delete", enable_events=True, pad=(4, 5), disabled=False, key="__CLEAR_ITEM__", button_color='sandybrown',size = (9,1)),
+        sg.Button(button_text="Clear All", enable_events=True, pad=(4, 5), disabled=False, key="__CLEAR_LIST__", button_color='sandybrown',size = (9,1))
     ],
     [
         sg.Text(text="", font=('Arial', 1))
@@ -333,11 +337,18 @@ if __name__ == "__main__":
         if event == "__PREVIEW_CB__":
             if (values["__PREVIEW_CB__"] == True):
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
+
+                window["__PREVIEW_PREVIOUS_FRAME__"].update(disabled=False)
+                window["__PREVIEW_NEXT_FRAME__"].update(disabled=False)
+
                 if(len([x for x in window["__INPUT_FILE_LIST__"].get_list_values()])!=0):
                     window["__IMG_SETTINGS_CB__"].update(disabled=False)
 
 
             else:
+                window["__PREVIEW_PREVIOUS_FRAME__"].update(disabled=True)
+                window["__PREVIEW_NEXT_FRAME__"].update(disabled=True)
+
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
                 window["__IMG_SETTINGS_CB__"].update(value=False)
                 window["__IMG_SETTINGS__"].update(visible=False)
@@ -385,7 +396,7 @@ if __name__ == "__main__":
 
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
 
-            if(event == "__REFRESH_PREVIEW__"):
+            if(event == "__REFRESH_PREVIEW__" ):
                 correct.preview_log = ''
                 correct.preview_errors_log = []
                 correct.preview_mode = 1
@@ -459,7 +470,6 @@ if __name__ == "__main__":
                             window["__IMG_SETTINGS__"].update(visible=False)
 
                     if (event == "__REFRESH_PREVIEW__"):
-
                         preview_error_list = []
                         if(len(correct.preview_errors_log)==0):
                             #print("No errors")
@@ -681,7 +691,7 @@ if __name__ == "__main__":
         if (event == "__OUTPUT_FOLDER__" and values["__OUTPUT_FOLDER_CB__"]==True):
             window["__OUTPUT_FOLDER__"].update(values["__OUTPUT_FOLDER__"])
 
-        if (event == "__CORRECT__") or (event == "__CORRECT_SINGLE__"):
+        if (event == "__CORRECT__") or (event == "__CORRECT_SINGLE__") or (event == "__CORRECT_SINGLE_ITEM__"):
 
             if (event == "__CORRECT__"):
                 filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
@@ -689,7 +699,7 @@ if __name__ == "__main__":
                 # clear preview listbox
                 window["__PREVIEW_STATUS__"].update(values='')
             else:
-                if(event == "__CORRECT_SINGLE__"):
+                if((event == "__CORRECT_SINGLE__") or (event == "__CORRECT_SINGLE_ITEM__")):
                     # clear preview listbox
                     window["__PREVIEW_STATUS__"].update(values='')
                     filepaths  = values["__INPUT_FILE_LIST__"]
@@ -737,28 +747,34 @@ if __name__ == "__main__":
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
 
-        if event == "__CLEAR_LIST__":
-            window["__IMG_SETTINGS__"].update(visible=False)
-            window["__INPUT_FILE_LIST__"].update(values=[])
-            window["__STATUS__"].update("")
-            window.Element('__VIDEO_VIEWER__').Update(visible=False)
-            window.Element('__PHOTO_VIEWER__').Update(visible=False)
+        if ((event == "__CLEAR_LIST__") or (event == "__CLEAR_ITEM__")):
+            if((event == "__CLEAR_LIST__")):
+                window["__IMG_SETTINGS__"].update(visible=False)
+                window["__INPUT_FILE_LIST__"].update(values=[])
+                window["__STATUS__"].update("")
+                window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
-            window["__COLOR_BALANCE_CB__"].update(disabled=False)
+                window["__COLOR_BALANCE_CB__"].update(disabled=False)
 
-            window["__IMG_SETTINGS_CB__"].update(disabled=True)
+                window["__IMG_SETTINGS_CB__"].update(disabled=True)
 
-            #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
-            window["__SATURATION_CB__"].update(disabled=False)
-            #window["__SATURATION_SLIDER__"].update(disabled=False)
-            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
-            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
+                #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+                window["__SATURATION_CB__"].update(disabled=False)
+                #window["__SATURATION_SLIDER__"].update(disabled=False)
+                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+            else:
+                if (event == "__CLEAR_ITEM__"):
+                    window["__IMG_SETTINGS__"].update(visible=False)
+                    init_file_list=[x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
 
-            #window["__INPUT_FILES__"]("")
-            #window["__INPUT_FILES__"].update(values,list=None)
-            #print("VALUES: ",values["__INPUT_FILES__"])
+                    for item in init_file_list:
+                        if(item==values["__INPUT_FILE_LIST__"][0]):
+                            init_file_list.remove(item)
 
-
+                    window["__INPUT_FILE_LIST__"].update(values=init_file_list)
+                    window.Element('__VIDEO_VIEWER__').Update(visible=False)
+                    window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
         if analyze_video_generator:
             try:
@@ -870,7 +886,7 @@ if __name__ == "__main__":
                     file_index += 1
                     current_in_filename=os.path.basename(f)
 
-                    if(event == "__CORRECT_SINGLE__"):
+                    if(event == "__CORRECT_SINGLE__" or event == "__CORRECT_SINGLE_ITEM__"):
                         window["__INPUT_FILE_LIST__"].update(set_to_index = list_box_selected_item)
                     else:
                         window["__INPUT_FILE_LIST__"].update(set_to_index=file_index-1)
