@@ -378,6 +378,8 @@ if __name__ == "__main__":
         if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
 
 
+
+
             if(event == "__REFRESH_PREVIEW__"):
                 correct.preview_log = ''
                 correct.preview_errors_log = []
@@ -504,6 +506,8 @@ if __name__ == "__main__":
             existing_filepaths = [x for x in window["__INPUT_FILE_LIST__"].get_list_values()]
             filepaths = existing_filepaths + values["__INPUT_FILES__"].split(";")
 
+
+            # remove dublicates
             for item in filepaths:
                 if item not in list_items:
                     list_items.append(item)
@@ -744,6 +748,9 @@ if __name__ == "__main__":
             #window["__SATURATION_SLIDER__"].update(disabled=False)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
+
+            window["__INPUT_FILES__"].update("")
+            window["__INPUT_FILES__"].update(text = "Select photos and videos")
 
 
 
