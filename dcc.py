@@ -705,6 +705,7 @@ if __name__ == "__main__":
                     filepaths  = values["__INPUT_FILE_LIST__"]
                     window["__IMG_SETTINGS__"].update(visible=False)
 
+
             file_generator = get_files(filepaths)
 
             window["__CORRECT__"].update(disabled=True)
@@ -715,6 +716,16 @@ if __name__ == "__main__":
             window["__PREVIEW_CB__"].update(disabled=True)
             window["__PREVIEW_FRAME_SECOND__"].update(disabled=True)
             window["__REFRESH_PREVIEW__"].update(disabled=True)
+
+            """"
+            if event == "__CORRECT_SINGLE__":
+                preview_list = []
+                preview_list.append("Current file was saved to:")
+                preview_list.append(str(output_filepath))
+                window["__PREVIEW_STATUS__"].update(values=preview_list)
+            """
+
+
 
             #window["__COLOR_BALANCE_CB__"].update(disabled=True)
 
