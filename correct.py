@@ -269,9 +269,8 @@ def correct(mat):
     else:
         corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
 
-
-
-    if(cb_level!=0):
+    if (blue_level != 0):
+    #if(cb_level!=0):
         try:
             corrected_mat = balance_colors(corrected_mat, cb_level)
         except:
@@ -508,7 +507,8 @@ def process_video(video_data, yield_preview=False):
         else:
             corrected_mat = cv2.cvtColor(rgb_mat, cv2.COLOR_RGB2BGR)
 
-        if (cb_level != 0):
+        if (blue_level != 0):
+        #if (cb_level != 0):
             try:
                 corrected_mat = balance_colors(corrected_mat, cb_level)
             except:

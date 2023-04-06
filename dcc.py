@@ -42,11 +42,12 @@ image_settings_section = [
     ],
     [
         sg.Frame('Underwater restoration settings',[
-            [
-                sg.CBox(text="Manual colors level      ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
-                sg.Push(),
-                sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
-            ],
+
+            #[
+            #    sg.CBox(text="Manual colors level      ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
+            #    sg.Push(),
+            #    sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
+            #],
             [
                 sg.CBox(text="Underwater rest level    ", key = "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
                 sg.Push(),
@@ -369,8 +370,8 @@ if __name__ == "__main__":
             correct.cb_level = 1
             correct.denoising_level = 0
 
-            window["__COLOR_BALANCE_CB__"].update(value=False)
-            window["__COLOR_BALANCE_SLIDER__"].update(value=correct.cb_level)
+            #window["__COLOR_BALANCE_CB__"].update(value=False)
+            #window["__COLOR_BALANCE_SLIDER__"].update(value=correct.cb_level)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(value=False)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=correct.blue_level)
             window["__WHITE_BALANCE_CB__"].update(value=False)
@@ -666,9 +667,9 @@ if __name__ == "__main__":
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             else:
                 window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
-        if event == "__COLOR_BALANCE_SLIDER__":
-            if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
-                correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
+        #if event == "__COLOR_BALANCE_SLIDER__":
+            #if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
+                #correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
 
         if event == "__TEMP_FOLDER_CB__":
             if (values["__TEMP_FOLDER_CB__"] == False):
