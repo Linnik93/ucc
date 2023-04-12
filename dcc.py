@@ -306,7 +306,7 @@ layout = [
 sg.set_options(scaling=1.333333333)
 
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
-
+window.move(0,0)
 window.bind('<Configure>',"Window_Event")
 
 def valid_file(path):
