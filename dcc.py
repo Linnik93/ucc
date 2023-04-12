@@ -662,11 +662,11 @@ if __name__ == "__main__":
             if (values["__WHITE_BALANCE_SLIDER__"] != correct.white_balance_level):
                 correct.white_balance_level = float(values["__WHITE_BALANCE_SLIDER__"])
 
-        if event == "__COLOR_BALANCE_CB__":
-            if(values["__COLOR_BALANCE_CB__"] == True):
-                window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
-            else:
-                window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
+        #if event == "__COLOR_BALANCE_CB__":
+        #    if(values["__COLOR_BALANCE_CB__"] == True):
+         #       window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
+         #   else:
+         #       window["__COLOR_BALANCE_SLIDER__"].update(disabled=True)
         #if event == "__COLOR_BALANCE_SLIDER__":
             #if(values["__COLOR_BALANCE_SLIDER__"]!=correct.cb_level):
                 #correct.cb_level = float(values["__COLOR_BALANCE_SLIDER__"])
@@ -751,7 +751,7 @@ if __name__ == "__main__":
 
             window["__STATUS__"].update("Cancelled")
 
-            window["__COLOR_BALANCE_CB__"].update(disabled=False)
+            #window["__COLOR_BALANCE_CB__"].update(disabled=False)
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             window["__SATURATION_CB__"].update(disabled=False)
             #window["__SATURATION_SLIDER__"].update(disabled=False)
@@ -767,7 +767,7 @@ if __name__ == "__main__":
                 window.Element('__VIDEO_VIEWER__').Update(visible=False)
                 window.Element('__PHOTO_VIEWER__').Update(visible=False)
 
-                window["__COLOR_BALANCE_CB__"].update(disabled=False)
+               # window["__COLOR_BALANCE_CB__"].update(disabled=False)
 
                 window["__IMG_SETTINGS_CB__"].update(disabled=True)
 
@@ -965,7 +965,7 @@ if __name__ == "__main__":
                 window["__PREVIEW_FRAME_SECOND__"].update(disabled=False)
                 window["__REFRESH_PREVIEW__"].update(disabled=False)
 
-                window["__COLOR_BALANCE_CB__"].update(disabled=False)
+                #window["__COLOR_BALANCE_CB__"].update(disabled=False)
                 #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
                 window["__SATURATION_CB__"].update(disabled=False)
                 #window["__SATURATION_SLIDER__"].update(disabled=False)
