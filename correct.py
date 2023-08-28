@@ -127,26 +127,42 @@ def get_filter_matrix(mat):
     hist_g = hist = cv2.calcHist([mat], [1], None, [256], [0, 256])
     hist_b = hist = cv2.calcHist([mat], [2], None, [256], [0, 256])
 
-    normalize_mat = np.zeros((256, 3))
+    #normalize_mat = np.zeros((256, 3))
     threshold_level = (mat.shape[0] * mat.shape[1]) / THRESHOLD_RATIO
+    ###
+    normalize_mat_red_channel = []
+    normalize_mat_green_channel = []
+    normalize_mat_blue_channel = []
+
+    normalize_mat_red_channel.append(0)
+    normalize_mat_green_channel.append(0)
+    normalize_mat_blue_channel.append(0)
+    ###
     for x in range(256):
 
         if hist_r[x] < threshold_level:
-            normalize_mat[x][0] = x
+            #normalize_mat[x][0] = x
+            normalize_mat_red_channel.append(x)
 
         if hist_g[x] < threshold_level:
-            normalize_mat[x][1] = x
+            #normalize_mat[x][1] = x
+            normalize_mat_green_channel.append(x)
 
         if hist_b[x] < threshold_level:
-            normalize_mat[x][2] = x
+            #normalize_mat[x][2] = x
+            normalize_mat_blue_channel.append(x)
 
-    normalize_mat[255][0] = 255
-    normalize_mat[255][1] = 255
-    normalize_mat[255][2] = 255
+    #normalize_mat[255][0] = 255
+    #normalize_mat[255][1] = 255
+    #normalize_mat[255][2] = 255
 
-    adjust_r_low, adjust_r_high = normalizing_interval(normalize_mat[..., 0])
-    adjust_g_low, adjust_g_high = normalizing_interval(normalize_mat[..., 1])
-    adjust_b_low, adjust_b_high = normalizing_interval(normalize_mat[..., 2])
+    normalize_mat_red_channel.append(255)
+    normalize_mat_green_channel.append(255)
+    normalize_mat_blue_channel.append(255)
+
+    adjust_r_low, adjust_r_high = normalizing_interval(normalize_mat_red_channel)
+    adjust_g_low, adjust_g_high = normalizing_interval(normalize_mat_green_channel)
+    adjust_b_low, adjust_b_high = normalizing_interval(normalize_mat_blue_channel)
 
     shifted = hue_shift_red(np.array([1, 1, 1]), hue_shift)
 
@@ -256,26 +272,9 @@ def adjust_gamma(image, gamma=1.0):
 def correct(mat):
     global blue_level,cb_level,sat_level,denoising_level,gamma_level
     original_mat = mat.copy()
-
-    if(blue_level != 0):
-        try:
-            filter_matrix = get_filter_matrix(mat)
-            corrected_mat = apply_filter(original_mat, filter_matrix)
-            corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-        except:
-            print("Error in underwater frame color restoration. Try to change restoration level.")
-            if(preview_mode == 1): preview_errors_log.append("Error in underwater frame color restoration. Try to change restoration level.")
-
-    else:
-        corrected_mat = cv2.cvtColor(original_mat, cv2.COLOR_RGB2BGR)
-
-    if (blue_level != 0):
-    #if(cb_level!=0):
-        try:
-            corrected_mat = balance_colors(corrected_mat, cb_level)
-        except:
-            print("Frame color alignment error. Try to change colors level.")
-            if(preview_mode == 1): preview_errors_log.append("Frame color alignment error. Try to change colors level.")
+    filter_matrix = get_filter_matrix(mat)
+    corrected_mat = apply_filter(original_mat, filter_matrix)
+    corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
 
     if(gamma_level!=1):
         try:
@@ -328,16 +327,6 @@ def correct(mat):
         except:
             print("Error in RGB correction. Try to change RGB levels.")
             if(preview_mode == 1): preview_errors_log.append("Error in RGB correction. Try to change RGB levels.")
-
-
-    #corrected_mat = convert_temp(corrected_mat,7500)
-######################################
-    #alpha = 1 # Contrast control (1.0-3.0)
-    #beta = 10 # Brightness control (0-100)
-    #corrected_mat = cv2.convertScaleAbs(corrected_mat, alpha=alpha, beta=beta)
-
-######################################
-
 
     return corrected_mat
 
@@ -496,23 +485,9 @@ def process_video(video_data, yield_preview=False):
 
         # Apply the filter
         rgb_mat = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        if (blue_level != 0):
-            try:
-                interpolated_filter_matrix = get_interpolated_filter_matrix(count)
-                corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
-                corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
-            except:
-                print("Error in underwater frame color restoration. Try to change restoration level.")
-
-        else:
-            corrected_mat = cv2.cvtColor(rgb_mat, cv2.COLOR_RGB2BGR)
-
-        if (blue_level != 0):
-        #if (cb_level != 0):
-            try:
-                corrected_mat = balance_colors(corrected_mat, cb_level)
-            except:
-                print("Frame color alignment error. Try to change colors level.")
+        interpolated_filter_matrix = get_interpolated_filter_matrix(count)
+        corrected_mat = apply_filter(rgb_mat, interpolated_filter_matrix)
+        corrected_mat = cv2.cvtColor(corrected_mat, cv2.COLOR_RGB2BGR)
 
         if (gamma_level != 1):
             try:
