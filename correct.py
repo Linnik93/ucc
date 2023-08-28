@@ -99,7 +99,7 @@ def apply_filter(mat, filt):
 
 def get_filter_matrix(mat):
     global BLUE_MAGIC_VALUE
-    # print('called get_filter_matrix')
+
     mat = cv2.resize(mat, (256, 256))
 
     # Get average values of RGB
@@ -109,7 +109,6 @@ def get_filter_matrix(mat):
     new_avg_r = avg_mat[0]
     hue_shift = 0
     while (new_avg_r < MIN_AVG_RED):
-
         shifted = hue_shift_red(avg_mat, hue_shift)
         new_avg_r = np.sum(shifted)
         hue_shift += 1
@@ -140,15 +139,15 @@ def get_filter_matrix(mat):
     ###
     for x in range(256):
 
-        if hist_r[x] < threshold_level:
+        if hist_r[x] - threshold_level < 2:
             #normalize_mat[x][0] = x
             normalize_mat_red_channel.append(x)
 
-        if hist_g[x] < threshold_level:
+        if hist_g[x] - threshold_level< 2:
             #normalize_mat[x][1] = x
             normalize_mat_green_channel.append(x)
 
-        if hist_b[x] < threshold_level:
+        if hist_b[x] - threshold_level< 2:
             #normalize_mat[x][2] = x
             normalize_mat_blue_channel.append(x)
 
@@ -183,10 +182,9 @@ def get_filter_matrix(mat):
     #  print("### adjust_red: ",adjust_red)
     adjust_red_green = shifted_g * red_gain
     #  print("### adjust_red_green: ", adjust_red_green)
-    BLUE_MAGIC_VALUE = 2 - blue_level
+
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
 
-    #  print("### adjust_red_blue: ",adjust_red_blue)
 
     return np.array([
         adjust_red, adjust_red_green, adjust_red_blue, 0, redOffset,

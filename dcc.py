@@ -40,23 +40,7 @@ image_settings_section = [
     [
         sg.Text(text="Image Settings", size=(34, 1), font=('Arial', 15), justification='center', visible=True, background_color='navajowhite2')
     ],
-    [
-        sg.Frame('Underwater restoration settings',[
-
-            #[
-            #    sg.CBox(text="Manual colors level      ", key="__COLOR_BALANCE_CB__", enable_events=True, font=('Arial', 10)),
-            #    sg.Push(),
-            #    sg.Slider(range=(0, 6), default_value=1, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__COLOR_BALANCE_SLIDER__", disabled=True, enable_events=True),
-            #],
-            [
-                sg.CBox(text="Underwater rest level    ", key = "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__", enable_events=True,font=('Arial', 10)),
-                sg.Push(),
-                sg.Slider(range=(0.0, 2), default_value=0.8, resolution=.01, size=(19, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__", disabled=True, enable_events=True),
-            ]
-        ],border_width=3)
-    ],
-
-
+    
     [
         sg.Frame('Background settings', [
             [
@@ -372,7 +356,7 @@ if __name__ == "__main__":
 
             #window["__COLOR_BALANCE_CB__"].update(value=False)
             #window["__COLOR_BALANCE_SLIDER__"].update(value=correct.cb_level)
-            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(value=False)
+            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(value=False)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=correct.blue_level)
             window["__WHITE_BALANCE_CB__"].update(value=False)
             window["__WHITE_BALANCE_SLIDER__"].update(value=correct.white_balance_level)
@@ -559,11 +543,13 @@ if __name__ == "__main__":
                 window["__OUT_FOLDER_BROWSE_BUTTON__"].update(disabled=False)
                 window["__OUTPUT_PREFIX__"].update(disabled=True)
 
+        """
         if event == "__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__":
             if (values["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"] == True):
                 window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
             else:
                 window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=True)
+                """
         if event == "__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__":
             if(float(values["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"])!=correct.blue_level):
                 correct.blue_level = values["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"]
@@ -755,7 +741,7 @@ if __name__ == "__main__":
             #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
             window["__SATURATION_CB__"].update(disabled=False)
             #window["__SATURATION_SLIDER__"].update(disabled=False)
-            window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+            #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
 
@@ -774,7 +760,7 @@ if __name__ == "__main__":
                 #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
                 window["__SATURATION_CB__"].update(disabled=False)
                 #window["__SATURATION_SLIDER__"].update(disabled=False)
-                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+                #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
             else:
                 if (event == "__CLEAR_ITEM__"):
                     window["__IMG_SETTINGS__"].update(visible=False)
@@ -969,7 +955,7 @@ if __name__ == "__main__":
                 #window["__COLOR_BALANCE_SLIDER__"].update(disabled=False)
                 window["__SATURATION_CB__"].update(disabled=False)
                 #window["__SATURATION_SLIDER__"].update(disabled=False)
-                window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
+                #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(disabled=False)
                 #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(disabled=False)
 
             except:
