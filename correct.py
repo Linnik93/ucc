@@ -22,6 +22,7 @@ THRESHOLD_RATIO = 2000
 MIN_AVG_RED = 60
 MAX_HUE_SHIFT = 120
 BLUE_MAGIC_VALUE = 1.2
+GAIN_ADJUST=1
 
 # Extracts color correction from every N seconds
 #if set 0 - every frame will be analyzed. if set value > 0 - will be analyzed every N second. if set -1 - will be analized only first frame
@@ -186,6 +187,28 @@ def get_filter_matrix(mat):
     adjust_red_blue = (shifted_b * red_gain * BLUE_MAGIC_VALUE)
 
 
+    if(GAIN_ADJUST!=1):
+        # calcuate new filter values
+        gain_adjust_red=gainAdjust(adjust_red,1)
+        gain_adjust_red_green=gainAdjust(adjust_red_green,0)
+        gain_adjust_red_blue =gainAdjust(adjust_red_blue,0)
+        gain_reOffset = gainAdjust(redOffset,0)
+        gain_greenGain = gainAdjust(green_gain,1)
+        gain_greenOffSet = gainAdjust(greenOffset,0)
+        gain_blueGain = gainAdjust(blue_gain,1)
+        gain_blueOffSet = gainAdjust(blueOffset,0)
+
+        # set new calculated filter values
+        adjust_red = gain_adjust_red
+        adjust_red_green= gain_adjust_red_green
+        adjust_red_blue = gain_adjust_red_blue
+        redOffset = gain_reOffset
+        green_gain=gain_greenGain
+        greenOffset=gain_greenOffSet
+        blue_gain=gain_blueGain
+        blueOffset=gain_blueOffSet
+
+
     return np.array([
         adjust_red, adjust_red_green, adjust_red_blue, 0, redOffset,
         0, green_gain, 0, 0, greenOffset,
@@ -193,6 +216,13 @@ def get_filter_matrix(mat):
         0, 0, 0, 1, 0,
     ])
 ###########################################################################
+
+def gainAdjust(value,property):
+    step = value - property
+    gain_value = step * GAIN_ADJUST + property
+    return gain_value
+
+
 # White balance
 
 def white_balance(img,wb_factor):

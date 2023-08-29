@@ -40,6 +40,16 @@ image_settings_section = [
     [
         sg.Text(text="Image Settings", size=(34, 1), font=('Arial', 15), justification='center', visible=True, background_color='navajowhite2')
     ],
+    [
+        sg.Frame('Underwater restoration level', [
+            [
+                sg.CBox(text="Gain adjust ", key="__UNDERWATER_REST_LEVEL_CB__", enable_events=True, font=('Arial', 10), default=False),
+                sg.Push(),
+                sg.Slider(range=(0, 1.8), default_value=1, resolution=0.01, size=(26, 10), orientation='h', font=('Arial', 10), key="__UNDERWATER_REST_LEVEL_SLIDER__", disabled=True, enable_events=True)
+            ]
+        ], border_width=3)
+    ]
+    ,
     
     [
         sg.Frame('Background settings', [
@@ -290,8 +300,10 @@ layout = [
 sg.set_options(scaling=1.333333333)
 
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
+window['__UNDERWATER_REST_LEVEL_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
 window.move(0,0)
 window.bind('<Configure>',"Window_Event")
+
 
 def valid_file(path):
     extension = path[path.rfind("."):].lower()
@@ -359,6 +371,7 @@ if __name__ == "__main__":
             #window["__UNDERWATER_RESTORATION_BLUE_LEVEL_CB__"].update(value=False)
             window["__UNDERWATER_RESTORATION_BLUE_LEVEL_SLIDER__"].update(value=correct.blue_level)
             window["__WHITE_BALANCE_CB__"].update(value=False)
+            window["__UNDERWATER_REST_LEVEL_CB__"].update(value=False)
             window["__WHITE_BALANCE_SLIDER__"].update(value=correct.white_balance_level)
             window["__SATURATION_CB__"].update(value=False)
             window["__SATURATION_SLIDER__"].update(value=correct.sat_level)
@@ -379,7 +392,7 @@ if __name__ == "__main__":
             window["__ADJ_BLUE_LEVEL_CB__"].update(value=False)
             window["__ADJ_BLUE_LEVEL_SLIDER__"].update(value=correct.adjust_blue_level)
 
-        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__"):
+        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__") :
 
             if(event == "__REFRESH_PREVIEW__" ):
                 correct.preview_log = ''
@@ -638,6 +651,17 @@ if __name__ == "__main__":
 
 
 #######################################
+        if event == "__UNDERWATER_REST_LEVEL_CB__":
+            if (values["__UNDERWATER_REST_LEVEL_CB__"] == True):
+                window["__UNDERWATER_REST_LEVEL_SLIDER__"].update(disabled=False)
+            else:
+                window["__UNDERWATER_REST_LEVEL_SLIDER__"].update(disabled=True)
+
+        if event == "__UNDERWATER_REST_LEVEL_SLIDER__":
+            if (values["__UNDERWATER_REST_LEVEL_SLIDER__"] != correct.GAIN_ADJUST):
+
+                correct.GAIN_ADJUST=float(values["__UNDERWATER_REST_LEVEL_SLIDER__"])
+
         if event == "__WHITE_BALANCE_CB__":
             if (values["__WHITE_BALANCE_CB__"] == True):
                 window["__WHITE_BALANCE_SLIDER__"].update(disabled=False)
