@@ -300,7 +300,20 @@ layout = [
 sg.set_options(scaling=1.333333333)
 
 window = sg.Window("UCC: Underwater Color Corrector", layout, finalize=True)
+
 window['__UNDERWATER_REST_LEVEL_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__WHITE_BALANCE_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__SATURATION_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__GAMMA_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__DENOISING_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__CONTRAST_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__BRIGHTNESS_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__SHARPNESS_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__ADJ_RED_LEVEL_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__ADJ_GREEN_LEVEL_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+window['__ADJ_BLUE_LEVEL_SLIDER__'].bind('<ButtonRelease-1>', ' Release')
+
+
 window.move(0,0)
 window.bind('<Configure>',"Window_Event")
 
@@ -392,9 +405,9 @@ if __name__ == "__main__":
             window["__ADJ_BLUE_LEVEL_CB__"].update(value=False)
             window["__ADJ_BLUE_LEVEL_SLIDER__"].update(value=correct.adjust_blue_level)
 
-        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__") :
+        if (event == "__INPUT_FILE_LIST__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__"  and event != "__CORRECT_SINGLE__") or (event == "__REFRESH_PREVIEW__" and len(values["__INPUT_FILE_LIST__"]) and event != "__CORRECT__") or (event == "__INPUT_FILES__") or (event == "__PREVIEW_CB__") or (event == "__UNDERWATER_REST_LEVEL_SLIDER__ Release") or (event == "__WHITE_BALANCE_SLIDER__ Release") or (event == "__SATURATION_SLIDER__ Release") or (event == "__GAMMA_SLIDER__ Release") or (event == "__DENOISING_SLIDER__ Release") or (event == "__CONTRAST_SLIDER__ Release") or (event == "__BRIGHTNESS_SLIDER__ Release") or (event == "__SHARPNESS_SLIDER__ Release") or (event == "__ADJ_RED_LEVEL_SLIDER__ Release") or (event == "__ADJ_GREEN_LEVEL_SLIDER__ Release") or (event == "__ADJ_BLUE_LEVEL_SLIDER__ Release"):
 
-            if(event == "__REFRESH_PREVIEW__" ):
+            if((event == "__REFRESH_PREVIEW__") or (event == "__UNDERWATER_REST_LEVEL_SLIDER__ Release") or (event == "__WHITE_BALANCE_SLIDER__ Release") or (event == "__SATURATION_SLIDER__ Release") or (event == "__GAMMA_SLIDER__ Release") or (event == "__DENOISING_SLIDER__ Release") or (event == "__CONTRAST_SLIDER__ Release") or (event == "__BRIGHTNESS_SLIDER__ Release") or (event == "__SHARPNESS_SLIDER__ Release") or (event == "__ADJ_RED_LEVEL_SLIDER__ Release") or (event == "__ADJ_GREEN_LEVEL_SLIDER__ Release") or (event == "__ADJ_BLUE_LEVEL_SLIDER__ Release")):
                 correct.preview_log = ''
                 correct.preview_errors_log = []
                 correct.preview_mode = 1
@@ -467,7 +480,7 @@ if __name__ == "__main__":
                         if (values["__IMG_SETTINGS_CB__"] == False):
                             window["__IMG_SETTINGS__"].update(visible=False)
 
-                    if (event == "__REFRESH_PREVIEW__"):
+                    if ((event == "__REFRESH_PREVIEW__")or (event == "__UNDERWATER_REST_LEVEL_SLIDER__ Release") or (event == "__WHITE_BALANCE_SLIDER__ Release") or (event == "__SATURATION_SLIDER__ Release") or (event == "__GAMMA_SLIDER__ Release") or (event == "__DENOISING_SLIDER__ Release") or (event == "__CONTRAST_SLIDER__ Release") or (event == "__BRIGHTNESS_SLIDER__ Release") or (event == "__SHARPNESS_SLIDER__ Release") or (event == "__ADJ_RED_LEVEL_SLIDER__ Release") or (event == "__ADJ_GREEN_LEVEL_SLIDER__ Release") or (event == "__ADJ_BLUE_LEVEL_SLIDER__ Release")):
                         preview_error_list = []
                         if(len(correct.preview_errors_log)==0):
                             #print("No errors")
@@ -661,6 +674,8 @@ if __name__ == "__main__":
             if (values["__UNDERWATER_REST_LEVEL_SLIDER__"] != correct.GAIN_ADJUST):
 
                 correct.GAIN_ADJUST=float(values["__UNDERWATER_REST_LEVEL_SLIDER__"])
+                print("Slider Test")
+
 
         if event == "__WHITE_BALANCE_CB__":
             if (values["__WHITE_BALANCE_CB__"] == True):
