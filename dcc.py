@@ -674,7 +674,7 @@ if __name__ == "__main__":
             if (values["__UNDERWATER_REST_LEVEL_SLIDER__"] != correct.GAIN_ADJUST):
 
                 correct.GAIN_ADJUST=float(values["__UNDERWATER_REST_LEVEL_SLIDER__"])
-                print("Slider Test")
+
 
 
         if event == "__WHITE_BALANCE_CB__":

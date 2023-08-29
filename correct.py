@@ -312,7 +312,8 @@ def correct(mat):
             if(preview_mode == 1): preview_errors_log.append("Gamma adjustment error. Try to change gamma level.")
     if(denoising_level!=0):
         try:
-            corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, denoising_level, 7, 21)
+            corrected_mat = cv2.fastNlMeansDenoisingColored(corrected_mat, None, denoising_level, 10, 7, 21)
+
         except:
             print("Error in noise correction. Try to change denoising level.")
             if(preview_mode == 1): preview_errors_log.append("Error in noise correction. Try to change denoising level.")
