@@ -474,7 +474,8 @@ def process_video(video_data, yield_preview=False):
     # video_FourCC = cv2.VideoWriter_fourcc(*'hvc1')
     video_fps = cap.get(cv2.CAP_PROP_FPS)
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    #fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = -1
 
     new_video = cv2.VideoWriter(temp_video_path, fourcc, video_fps,(int(frame_width), int(frame_height)))
 
